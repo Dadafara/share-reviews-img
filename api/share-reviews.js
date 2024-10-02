@@ -4,7 +4,6 @@ const path = require("path");
 
 path.resolve(process.cwd(), "fonts", "fonts.conf");
 path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
-// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -166,6 +165,12 @@ async function handler(req, res) {
       error: "Error converting images to Base64.",
     });
   }
+
+  // Vérification de l'existence des avis
+  const numberOfReviews = Array.isArray(review.reviews)
+    ? review.reviews.length
+    : 0;
+
   const text =
     locale === "de"
       ? `${text_1} ${review.company_name}: ${ratingText}`
@@ -226,9 +231,7 @@ async function handler(req, res) {
   <g transform="translate(${leftMarginText}, ${
     titleY + wrappedText.length * 80 + 50
   })">
-    <text class="rating">${text_2}
-
- ${review.reviews.length} ${text_3}</text>
+    <text class="rating">${text_2} ${numberOfReviews} ${text_3}</text>
   </g>
 
   <!-- Rating Image Row -->
@@ -269,4 +272,3 @@ async function handler(req, res) {
   );
   res.send(imageBuffer);
 }
-module.exports = handler;
