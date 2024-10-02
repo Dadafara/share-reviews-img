@@ -133,6 +133,17 @@ async function handler(req, res) {
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
+  let company;
+  try {
+    const response = await axios(
+      `https://api-starevaluator.com/api/company/id/${data}`
+    );
+    company = response.data;
+  } catch (error) {
+    res.status(500).json({
+      error: "Error fetching review data.",
+    });
+  }
   let review;
   try {
     const response = await axios(
@@ -228,7 +239,7 @@ async function handler(req, res) {
   })">
     <text class="rating">${text_2}
 
- ${review.reviews.length} ${text_3}</text>
+ ${company.reviews.length} ${text_3}</text>
   </g>
 
   <!-- Rating Image Row -->
