@@ -133,21 +133,21 @@ async function handler(req, res) {
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let company;
+  let review;
   try {
     const response = await axios(
-      `https://api-starevaluator.com/api/company/id/${data}`
+      `https://api-starevaluator.com/api/review/id/${data}`
     );
-    company = response.data;
+    review = response.data;
   } catch (error) {
     res.status(500).json({
-      error: "Error fetching company data.",
+      error: "Error fetching review data.",
     });
   }
 
-  const ratingIndex = Math.min(Math.floor(company.note), 4);
+  const ratingIndex = Math.min(Math.floor(review.note), 4);
   const ratingText = ratings[ratingIndex];
-  const rating = roundToHalf(company.note);
+  const rating = roundToHalf(review.note);
 
   const imageURLLogo = `${CDN_BASE_URL}/star-evaluator-bleu.png`;
   const imageURLRating = `${CDN_BASE_URL}/ratings/${rating}.png`;
@@ -168,8 +168,8 @@ async function handler(req, res) {
   }
   const text =
     locale === "de"
-      ? `${text_1} ${company.company_name}: ${ratingText}`
-      : ` ${company.company_name} ${text_1} ${ratingText}`;
+      ? `${text_1} ${review.company_name}: ${ratingText}`
+      : ` ${review.company_name} ${text_1} ${ratingText}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
