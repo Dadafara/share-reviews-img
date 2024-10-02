@@ -2,44 +2,52 @@ const axios = require("axios");
 const sharp = require("sharp");
 const path = require("path");
 
-path.resolve(process.cwd(), "font", "font.conf");
+path.resolve(process.cwd(), "fonts", "fonts.conf");
 path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
+// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Bad", "Low", "Medium", "Great", "Excellent"],
+    text_1: "is rated",
+    text_2: "Based on",
+    text_3: "reviews",
   },
   fr: {
-    text_1: "Noté",
-    text_2: "par",
+    ratings: ["Mauvais", "Bas", "Moyen", "Bien", "Excellent"],
+    text_1: "est noté",
+    text_2: "Basé sur",
     text_3: "avis",
   },
   de: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
+    text_1: "Gesamtbewertung für",
+    text_2: "Basierend auf",
+    text_3: "Bewertungen",
   },
   it: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
+    text_1: "è valutata",
+    text_2: "Basata su",
+    text_3: "recensioni",
   },
   pt: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
+    text_1: "está classificada como",
+    text_2: "Baseado em",
+    text_3: "opiniões",
   },
   es: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
+    text_1: "tiene una valoración de",
+    text_2: "En base a",
+    text_3: "opiniones",
   },
   nl: {
-    text_1: "",
-    text_2: "",
-    text_3: "",
+    ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
+    text_1: "beoordeeld",
+    text_2: "Gebaseerd op",
+    text_3: "beoordelinge",
   },
 };
 
@@ -69,13 +77,33 @@ function roundToHalf(x) {
   }
 }
 
-const BASE_URL = "https://www.starevaluator.com";
+const CDN_BASE_URL = "https://www.starevaluator.com";
 
 function getLanguageData(lang) {
   return languageRatings[lang];
 }
 
-async function fetchImage(url) {
+function wrapText(text, maxLength) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = words.shift() || "";
+
+  for (const word of words) {
+    const testLine = currentLine ? currentLine + " " + word : word;
+
+    if (testLine.length <= maxLength) {
+      currentLine = testLine;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+
+  lines.push(currentLine);
+  return lines;
+}
+
+async function fetchImageToBase64(url) {
   const response = await axios.get(url, {
     responseType: "arraybuffer",
   });
@@ -84,17 +112,12 @@ async function fetchImage(url) {
 }
 
 async function handler(req, res) {
-  const query = req.query || {};
-  const { data, locale } = query;
+  const { data, locale } = req.query;
 
   if (!data || !locale) {
-    // Utilisation de writeHead pour définir le statut 400 (Bad Request)
-    res.writeHead(400, { "Content-Type": "application/json" });
-    return res.end(
-      JSON.stringify({
-        error: "Missing required query parameters 'data' or 'locale'.",
-      })
-    );
+    res
+      .status(400)
+      .json({ error: "Missing required query parameters 'data' or 'locale'." });
   }
 
   function isValidLocale(locale) {
@@ -103,137 +126,136 @@ async function handler(req, res) {
   }
 
   if (!isValidLocale(locale)) {
-    // Utilisation de writeHead pour définir le statut 404 (Not Found)
-    res.writeHead(404, { "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ error: "Locale not supported" }));
+    res.status(404).json({
+      error: "Locale not supported",
+    });
   }
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let review;
+  let company;
   try {
     const response = await axios(
-      `https://api-starevaluator.com/api/review/id/${data}`
+      `https://api-starevaluator.com/api/company/id/${data}`
     );
-    review = response.data;
+    company = response.data;
   } catch (error) {
     res.status(500).json({
       error: "Error fetching company data.",
     });
   }
 
-  const ratingIndex = Math.min(Math.floor(review.note), 4);
+  const ratingIndex = Math.min(Math.floor(company.note), 4);
   const ratingText = ratings[ratingIndex];
-  const rating = roundToHalf(review.note);
+  const rating = roundToHalf(company.note);
 
-  const imgLogo = `${BASE_URL}/star-evaluator-bleu.png`;
-  const imgRating = `${BASE_URL}/rating/${rating}.png`;
+  const imageURLLogo = `${CDN_BASE_URL}/star-evaluator-bleu.png`;
+  const imageURLRating = `${CDN_BASE_URL}/ratings/${rating}.png`;
 
-  let imgBaseRating;
-  let imgBaseLogo;
+  let imageBase64Logo;
+  let imageBase64Rating;
 
   try {
-    [imgBaseRating, imgBaseLogo] = await Promise.all([
-      fetchImage(imgRating),
-      fetchImage(imgLogo),
+    [imageBase64Logo, imageBase64Rating] = await Promise.all([
+      fetchImageToBase64(imageURLLogo),
+      fetchImageToBase64(imageURLRating),
     ]);
   } catch (error) {
+    console.error("Error converting images to Base64:", error);
     res.status(500).json({
-      error: "Error converting images",
+      error: "Error converting images to Base64.",
     });
   }
   const text =
     locale === "de"
-      ? `${text_1} ${review.experience}: ${ratingText}`
-      : ` ${review.username} ${text_1} ${ratingText}`;
+      ? `${text_1} ${company.company_name}: ${ratingText}`
+      : ` ${company.company_name} ${text_1} ${ratingText}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
   const leftMargin = 150;
-  const leftMarginText = 155;
-  const leftMarginRatting = 143;
+  const leftMarginText = 150;
+  const leftMarginRatting = 150;
+  const leftMarginLogo = 135;
   const titleY = 150;
 
   const wrappedText = wrapText(text, 27);
 
   const svgImage = `
-  <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style type="text/css">
-        @font-face {
-          font-family: "Helvetica";
-          src: "./fonts/Helvetica Bold.ttf";
-        }
-        .title {
-          font-size: 72px;
-          font-family: "Helvetica";
-          text-anchor: start;
-        }
-        .title_2 {
-          font-size: 72px;
-          font-family: "Helvetica";
-          text-anchor: start;
-          font-weight: bold;
-        }
-        .rating {
-          font-size: 30px;
-          font-family: "Helvetica";
-          text-anchor: start;
-        }
-      </style>
-    </defs>
-    <rect width="100%" height="100%" fill="white"/>
-  
-    <!-- Title Rows -->
-    ${wrappedText
-      .map(
-        (line, index) => `
-      <g transform="translate(${leftMargin}, ${titleY + index * 80})">
-        <text class="title">${line.replace(
-          ratingText,
-          `<tspan class="title_2">${review.experience}</tspan>`
-        )}</text>
-      </g>
-    `
-      )
-      .join("")}
-  
-    <g transform="translate(${leftMarginText}, ${
+<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      @font-face {
+        font-family: "Helvetica";
+        src: "./fonts/Helvetica Bold.ttf";
+      }
+      .title {
+        font-size: 72px;
+        font-family: "Helvetica";
+        text-anchor: start;
+      }
+      .title_2 {
+        font-size: 72px;
+        font-family: "Helvetica";
+        text-anchor: start;
+        font-weight: bold;
+      }
+      .rating {
+        font-size: 30px;
+        font-family: "Helvetica";
+        text-anchor: start;
+      }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+
+  <!-- Title Rows -->
+  ${wrappedText
+    .map(
+      (line, index) => `
+    <g transform="translate(${leftMargin}, ${titleY + index * 80})">
+      <text class="title">${line.replace(
+        ratingText,
+        `<tspan class="title_2">${ratingText}</tspan>`
+      )}</text>
+    </g>
+  `
+    )
+    .join("")}
+
+  <g transform="translate(${leftMarginText}, ${
     titleY + wrappedText.length * 80 + 50
   })">
-      <text class="rating">
-  
-   ${review.reviews.length} ${text_3}</text>
-    </g>
-  
-    <!-- Rating Image Row -->
-    <g transform="translate(${leftMarginRatting}, ${
+    <text class="rating">${text_2}
+
+ ${company.reviews.length} ${text_3}</text>
+  </g>
+
+  <!-- Rating Image Row -->
+  <g transform="translate(${leftMarginRatting}, ${
     titleY + wrappedText.length * 80 + 20 + 10
   })">
-      <image
-        class="img-rating"
-        href="${imgBaseRating}"
-        height="150"
-        width="350"
-      />
-    </g>
-  
-    <!-- Logo Row -->
-    <g transform="translate(${leftMargin}, ${
+    <image
+      class="img-rating"
+      href="${imageBase64Rating}"
+      height="150"
+      width="350"
+    />
+  </g>
+
+  <!-- Logo Row -->
+  <g transform="translate(${leftMarginLogo}, ${
     titleY + wrappedText.length * 80 + 80 + 60
   })">
-      <image
-        class="img-logo"
-        href="${imgBaseLogo}"
-        height="80"
-        width="250"
-      />
-      <text class="rating">
-  
-       ${text_2} ${review.username}</text>
-    </g>
-  </svg>
-  `;
+    <image
+      class="img-logo"
+      href="${imageBase64Logo}"
+      height="100"
+      width="350"
+    />
+  </g>
+</svg>
+`;
 
   const imageBuffer = await sharp(Buffer.from(svgImage))
     .resize(1200, 630)
@@ -245,8 +267,6 @@ async function handler(req, res) {
     "Cache-Control",
     `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
   );
-  res.writeHead(200, { "Content-Type": "image/png" });
-  res.end(imageBuffer);
+  res.send(imageBuffer);
 }
-
 module.exports = handler;
