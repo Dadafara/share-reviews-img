@@ -203,7 +203,7 @@ async function handler(req, res) {
   })">
       <text class="rating">
   
-   ${company.reviews.length} ${text_3}</text>
+   ${review.reviews.length} ${text_3}</text>
     </g>
   
     <!-- Rating Image Row -->
