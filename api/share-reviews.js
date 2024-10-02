@@ -122,9 +122,9 @@ async function handler(req, res) {
     });
   }
 
-  const ratingIndex = Math.min(Math.floor(company.note), 4);
+  const ratingIndex = Math.min(Math.floor(review.note), 4);
   const ratingText = ratings[ratingIndex];
-  const rating = roundToHalf(company.note);
+  const rating = roundToHalf(review.note);
 
   const imgLogo = `${BASE_URL}/star-evaluator-bleu.png`;
   const imgRating = `${BASE_URL}/rating/${rating}.png`;
