@@ -140,10 +140,10 @@ async function handler(req, res) {
   try {
     const [companyResponse, reviewResponse] = await Promise.all([
       axios(`https://api-starevaluator.com/api/company/id/${data}`),
-      axios(`https://api-starevaluator.com/api/review/id/${data}`),
+      axios(`https://api-starevaluator.com/api/review/id/${id}`),
     ]);
     company = companyResponse.data;
-    review = reviewResponse.data;
+    review = reviewResponse.id;
   } catch (error) {
     return res
       .status(500)
@@ -195,7 +195,7 @@ async function handler(req, res) {
         src: url("${helveticaBoldPath}");
       }
       .title {
-        font-size: 72px;
+        font-size: 10px;
         font-family: "Helvetica";
         text-anchor: start;
       }
