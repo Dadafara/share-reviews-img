@@ -191,14 +191,6 @@ async function handler(req, res) {
         font-family: "Helvetica";
         src: "./fonts/Helvetica Bold.ttf";
       }
-        @font-face {
-            font-family: "Helvetica";
-            src: url("${path.resolve(
-              process.cwd(),
-              "fonts",
-              "Helvetica Bold.ttf"
-            )}") format("truetype");
-          }
       .title {
         font-size: 72px;
         font-family: "Helvetica";
