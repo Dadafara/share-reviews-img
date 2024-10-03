@@ -184,80 +184,109 @@ async function handler(req, res) {
 
   const wrappedText = wrapText(text, 27);
 
-  const imageBase64Rating = `data:image/png;base64,${base64StringRating}`;
-  const imageBase64Logo = `data:image/png;base64,${base64StringLogo}`;
+  // Debugging - Check if the images are properly fetched
+  console.log("Logo Base64:", imageBase64Logo);
+  console.log("Rating Base64:", imageBase64Rating);
+
+  if (!imageBase64Logo || !imageBase64Rating) {
+    console.error("One of the base64 images is missing.");
+    res.status(500).json({
+      error: "Error fetching or converting images to Base64.",
+    });
+    return;
+  }
 
   const svgImage = `
-  <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style type="text/css">
-        @font-face {
-          font-family: "Helvetica";
-          src: url("${helveticaBoldPath}");
-        }
-        .title {
-          font-size: 50px;
-          font-family: "Helvetica";
-          font-weight: bold;
-          fill: #000;
-        }
-        .rating-text {
-          font-size: 30px;
-          font-family: "Helvetica";
-          fill: #000;
-        }
-        .img-rating {
-          transform: translate(0, 20);
-        }
-      </style>
-    </defs>
-    <rect width="100%" height="100%" fill="white"/>
-  
-    <!-- Titre avec mise à ligne automatique -->
-    <foreignObject x="50" y="100" width="${svgWidth - 100}" height="100">
-      <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
-        ${review.experience}
-      </div>
-    </foreignObject>
-  
-    <!-- Nom du Critique -->
-    <g transform="translate(50, 200)">
-      <text class="rating-text">
-        ${text_2} ${review.username}
-      </text>
-    </g>
-  
-    <!-- Étoiles de la Note -->
-    <g transform="translate(50, 250)">
-      <image
-        class="img-rating"
-        href="${imageBase64Rating}"
-        height="50"
-        width="250"
+<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      @font-face {
+        font-family: "Helvetica";
+        src: url("${helveticaBoldPath}");
+      }
+      .title {
+        font-size: 50px;
+        font-family: "Helvetica";
+        font-weight: bold;
+        text-anchor: start;
+        fill: #000;
+      }
+      .rating-text {
+        font-size: 30px;
+        font-family: "Helvetica";
+        text-anchor: start;
+        fill: #000;
+      }
+      .img-rating {
+        transform: translate(0, 20);
+      }
+      .line {
+        stroke: #ccc;
+        stroke-width: 2;
+      }
+      .wrapped-text {
+        font-size: 45px;
+        font-family: "Helvetica";
+        font-weight: bold;
+        fill: #000;
+      }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+
+  <!-- Wrapped Experience Text -->
+  <g transform="translate(50, 100)">
+    ${wrappedText
+      .map(
+        (line, index) => `
+      <text class="wrapped-text" x="0" y="${index * 55}">
+        ${line}
+      </text>`
+      )
+      .join("")}
+  </g>
+
+  <!-- Nom du Critique -->
+  <g transform="translate(50, 250)">
+    <text class="rating-text">
+      ${text_2} ${review.username}
+    </text>
+  </g>
+
+  <!-- Horizontal Line -->
+  <line class="line" x1="50" y1="300" x2="1150" y2="300" />
+
+  <!-- Rating Stars + Logo Side by Side -->
+  <g transform="translate(50, 350)">
+    <!-- Rating Stars -->
+    <image
+      class="img-rating"
+      href="${imageBase64Rating}"
+      height="40"  <!-- Reduced star size -->
+      width="200"
       />
-      <text class="rating-text" transform="translate(270, 20)">
-        ${rating} / 5
-      </text>
-    </g>
-  
-    <!-- Total des Critiques -->
-    <g transform="translate(50, 320)">
-      <text class="rating-text">
-        ${company.total_reviews} ${text_3}
-      </text>
-    </g>
-  
+    <!-- Rating Text -->
+    <text class="rating-text" transform="translate(220, 30)">
+      ${rating} / 5
+    </text>
     <!-- Logo -->
-    <g transform="translate(850, 450)">
-      <image
-        class="img-logo"
-        href="${imageBase64Logo}"
-        height="50"
-        width="150"
+    <image
+      class="img-logo"
+      href="${imageBase64Logo}"
+      height="40"  <!-- Adjusted logo size -->
+      width="120"
+      transform="translate(300, 0)"
       />
-    </g>
-  </svg>
-  `;
+  </g>
+
+  <!-- Total des Critiques -->
+  <g transform="translate(50, 420)">
+    <text class="rating-text">
+      ${company.total_reviews} ${text_3}
+    </text>
+  </g>
+</svg>
+`;
 
   const imageBuffer = await sharp(Buffer.from(svgImage))
     .resize(1200, 630)
@@ -269,6 +298,7 @@ async function handler(req, res) {
     "Cache-Control",
     `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
   );
+
   res.send(imageBuffer);
 }
 module.exports = handler;
