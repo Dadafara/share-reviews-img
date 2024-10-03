@@ -115,9 +115,9 @@ async function fetchImageToBase64(url) {
 }
 
 async function handler(req, res) {
-  const { id, data, locale } = req.query;
+  const { data, locale } = req.query;
 
-  if (!id || !data || !locale) {
+  if (!data || !locale) {
     res
       .status(400)
       .json({ error: "Missing required query parameters 'data' or 'locale'." });
@@ -140,7 +140,7 @@ async function handler(req, res) {
   try {
     const [companyResponse, reviewResponse] = await Promise.all([
       axios(`https://api-starevaluator.com/api/company/id/${data}`),
-      axios(`https://api-starevaluator.com/api/review/id/${id}`),
+      axios(`https://api-starevaluator.com/api/review/id/${data}`),
     ]);
     company = companyResponse.data;
     review = reviewResponse.data;
