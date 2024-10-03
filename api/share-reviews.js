@@ -230,8 +230,8 @@ async function handler(req, res) {
     </g>
   
     <!-- Rating stars -->
-    <g transform="translate(50, 400)">
-      <image href="${imageBase64Rating}" height="50" width="250" />
+    <g transform="translate(50, 400) ${titleY}">
+      <image href="${imageBase64Rating}" height="150" width="250" />
       <text class="rating" transform="translate(270, 35)">
         ${text_2} ${review.username}
       </text>
