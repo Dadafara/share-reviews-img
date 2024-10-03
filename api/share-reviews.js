@@ -189,7 +189,7 @@ async function handler(req, res) {
     <style type="text/css">
       @font-face {
         font-family: "Helvetica";
-        src: "./fonts/Helvetica Bold.ttf";
+        src: url("./fonts/Helvetica Bold.ttf");
       }
       .title {
         font-size: 72px;
