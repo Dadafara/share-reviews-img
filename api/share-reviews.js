@@ -1,5 +1,6 @@
 const axios = require("axios");
 const sharp = require("sharp");
+const fs = require("fs");
 const path = require("path");
 
 path.resolve(process.cwd(), "fonts", "fonts.conf");
