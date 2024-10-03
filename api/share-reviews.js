@@ -9,36 +9,43 @@ const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
 
 const languageRatings = {
   en: {
+    ratings: ["Bad", "Low", "Medium", "Great", "Excellent"],
     text_1: "Rated",
     text_2: "by",
     text_3: "reviews",
   },
   fr: {
+    ratings: ["Mauvais", "Bas", "Moyen", "Bien", "Excellent"],
     text_1: "Noté",
     text_2: "par",
     text_3: "avis",
   },
   de: {
+    ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
     text_1: "Bewertet",
     text_2: "von",
     text_3: "Bewertungen",
   },
   it: {
+    ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
     text_1: "Valutato",
     text_2: "da",
     text_3: "recensioni",
   },
   pt: {
+    ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
     text_1: "Avaliado",
     text_2: "por",
     text_3: "opiniões",
   },
   es: {
+    ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
     text_1: "Calificado",
     text_2: "por",
     text_3: "opiniones",
   },
   nl: {
+    ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
     text_1: "Beoordeeld",
     text_2: "door",
     text_3: "beoordelingen",
@@ -236,7 +243,7 @@ async function handler(req, res) {
         ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
       </text>
       <g transform="translate(${svgWidth - 250}, 0)">
-        <image href="${imageBase64Logo}" height="80" width="150" />
+        <image href="${imageBase64Logo}" height="90" width="150" />
       </g>
     </g>
   </svg>
