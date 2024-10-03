@@ -115,7 +115,7 @@ async function fetchImageToBase64(url) {
 }
 
 async function handler(req, res) {
-  const { data, locale } = req.query;
+  const { id, data, locale } = req.query;
 
   if (!data || !locale) {
     res
