@@ -212,12 +212,12 @@ async function handler(req, res) {
   </defs>
   <rect width="100%" height="100%" fill="white"/>
 
-  <!-- Lignes de Titre -->
-  <g transform="translate(50, 100)">
-    <text class="title" x="0" y="0">
+  <!-- Titre avec mise à ligne automatique -->
+  <foreignObject x="50" y="100" width="${svgWidth - 100}" height="100">
+    <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
       ${review.experience}
-    </text>
-  </g>
+    </div>
+  </foreignObject>
 
   <!-- Nom du Critique -->
   <g transform="translate(50, 200)">
@@ -245,6 +245,8 @@ async function handler(req, res) {
       ${company.total_reviews} ${text_3}
     </text>
   </g>
+
+  <line class="line" x1="50" y1="300" x2="1150" y2="300" />
 
   <!-- Logo -->
   <g transform="translate(850, 450)">
