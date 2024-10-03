@@ -213,10 +213,19 @@ async function handler(req, res) {
   <rect width="100%" height="100%" fill="white"/>
 
   <!-- Titre avec mise à ligne automatique -->
-  <g x="50" y="100" width="${svgWidth - 100}" height="100">
-    <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
+  <foreignObject x="50" y="100" width="${
+    svgWidth - 100
+  }" height="300"> <!-- Hauteur augmentée -->
+  <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
+    ${review.experience}
+  </div>
+</foreignObject>
+
+  <!-- Lignes de Titre -->
+  <g transform="translate(50, 100)">
+    <text class="title" x="0" y="0">
       ${review.experience}
-    </div>
+    </text>
   </g>
 
   <!-- Nom du Critique -->
