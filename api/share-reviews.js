@@ -213,6 +213,9 @@ async function handler(req, res) {
           stroke: black;
           stroke-width: 0.5;
         }
+        .logo {
+          font-size: 30px;
+        }
       </style>
     </defs>
     <rect width="100%" height="100%" fill="white"/>
@@ -243,7 +246,7 @@ async function handler(req, res) {
             ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
         </text>
     <g transform="translate(${svgWidth - 300}, 0)">
-      <image href="${imageBase64Logo}" height="50" width="250" />
+      <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
     </g>
   </g>
   </svg>
