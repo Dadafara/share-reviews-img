@@ -187,6 +187,10 @@ async function handler(req, res) {
 <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style type="text/css">
+      @font-face {
+        font-family: "Helvetica";
+        src: "./fonts/Helvetica Bold.ttf";
+      }
         @font-face {
             font-family: "Helvetica";
             src: url("${path.resolve(
