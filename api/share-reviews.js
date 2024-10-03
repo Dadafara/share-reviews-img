@@ -115,7 +115,7 @@ async function fetchImageToBase64(url) {
 }
 
 async function handler(req, res) {
-  const { reviewId, data, locale } = req.query;
+  const { data, locale } = req.query;
 
   if (!reviewId || !data || !locale) {
     res
@@ -140,7 +140,7 @@ async function handler(req, res) {
   try {
     const [companyResponse, reviewResponse] = await Promise.all([
       axios(`https://api-starevaluator.com/api/company/id/${data}`),
-      axios(`https://api-starevaluator.com/api/review/id/${reviewId}`),
+      axios(`https://api-starevaluator.com/api/review/id/${data}`),
     ]);
     company = companyResponse.data;
     review = reviewResponse.data;
