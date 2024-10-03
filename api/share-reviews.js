@@ -5,6 +5,7 @@ const path = require("path");
 const pathToFonts = path.resolve(process.cwd(), "fonts");
 process.env.FONTCONFIG_PATH = pathToFonts;
 const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
+// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -13,11 +14,68 @@ const languageRatings = {
     text_2: "by",
     text_3: "reviews",
   },
-  // Add other language data here as needed
+  fr: {
+    ratings: ["Mauvais", "Bas", "Moyen", "Bien", "Excellent"],
+    text_1: "Noté",
+    text_2: "par",
+    text_3: "avis",
+  },
+  de: {
+    ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
+    text_1: "Bewertet",
+    text_2: "von",
+    text_3: "Bewertungen",
+  },
+  it: {
+    ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
+    text_1: "Valutato",
+    text_2: "da",
+    text_3: "recensioni",
+  },
+  pt: {
+    ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
+    text_1: "Avaliado",
+    text_2: "por",
+    text_3: "opiniões",
+  },
+  es: {
+    ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
+    text_1: "Calificado",
+    text_2: "por",
+    text_3: "opiniones",
+  },
+  nl: {
+    ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
+    text_1: "Beoordeeld",
+    text_2: "door",
+    text_3: "beoordelingen",
+  },
 };
 
 function roundToHalf(x) {
-  return Math.round(x * 2) / 2;
+  if (x === 0) {
+    return 0;
+  } else if (x > 0 && x <= 1) {
+    return 1;
+  } else if (x > 1 && x <= 1.7) {
+    return 1.5;
+  } else if (x > 1.7 && x <= 2) {
+    return 2;
+  } else if (x > 2 && x <= 2.7) {
+    return 2.5;
+  } else if (x > 2.7 && x <= 3) {
+    return 3;
+  } else if (x > 3 && x <= 3.7) {
+    return 3.5;
+  } else if (x > 3.7 && x <= 4) {
+    return 4;
+  } else if (x > 4 && x <= 4.7) {
+    return 4.5;
+  } else if (x > 4.7 && x <= 5) {
+    return 5;
+  } else {
+    return x; // handle cases where x > 5 or x < 0, if needed
+  }
 }
 
 const CDN_BASE_URL = "https://www.starevaluator.com";
@@ -32,7 +90,7 @@ function wrapText(text, maxLength) {
   let currentLine = words.shift() || "";
 
   for (const word of words) {
-    const testLine = currentLine + " " + word;
+    const testLine = currentLine ? currentLine + " " + word : word;
 
     if (testLine.length <= maxLength) {
       currentLine = testLine;
@@ -61,19 +119,17 @@ async function handler(req, res) {
     res
       .status(400)
       .json({ error: "Missing required query parameters 'data' or 'locale'." });
-    return;
   }
 
   function isValidLocale(locale) {
     const supportedLocales = ["fr", "de", "pt", "nl", "it", "es", "en"];
-    return supportedLocales.includes(locale);
+    return locale ? supportedLocales.includes(locale) : false;
   }
 
   if (!isValidLocale(locale)) {
     res.status(404).json({
       error: "Locale not supported",
     });
-    return;
   }
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
@@ -112,93 +168,87 @@ async function handler(req, res) {
     res.status(500).json({
       error: "Error converting images to Base64.",
     });
-    return;
   }
-
-  const wrappedText = wrapText(review.experience, 60);
+  const text =
+    locale === "de"
+      ? `${text_1} ${review.company_name}: ${ratingText}`
+      : ` ${review.company_name} ${text_1} ${ratingText}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
+  const leftMargin = 150;
+  const leftMarginText = 150;
+  const leftMarginRatting = 150;
+  const leftMarginLogo = 135;
+  const titleY = 150;
+
+  const wrappedText = wrapText(text, 27);
 
   const svgImage = `
-<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <style type="text/css">
-      @font-face {
-        font-family: "Helvetica";
-        src: url("${helveticaBoldPath}");
-      }
-      .title {
-        font-size: 48px;
-        font-family: "Helvetica";
-        font-weight: bold;
-        text-anchor: start;
-        fill: #000;
-      }
-      .review-text {
-        font-size: 36px;
-        font-family: "Helvetica";
-        text-anchor: start;
-        fill: #000;
-      }
-      .rating {
-        font-size: 30px;
-        font-family: "Helvetica";
-        text-anchor: start;
-        fill: #000;
-      }
-    </style>
-  </defs>
-  <rect width="100%" height="100%" fill="white"/>
-<<<<<<< HEAD
+  <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style type="text/css">
+        @font-face {
+          font-family: "Helvetica";
+          src: url("${helveticaBoldPath}");
+        }
+        .title {
+          font-size: 48px;
+          font-family: "Helvetica";
+          font-weight: bold;
+          text-anchor: start;
+          fill: #000;
+        }
+        .review-text {
+          font-size: 36px;
+          font-family: "Helvetica";
+          text-anchor: start;
+          fill: #000;
+        }
+        .rating {
+          font-size: 30px;
+          font-family: "Helvetica";
+          text-anchor: start;
+          fill: #000;
+        }
+      </style>
+    </defs>
+    <rect width="100%" height="100%" fill="white"/>
+    
+    <!-- Review text -->
+    <g transform="translate(50, 100)">
+      ${wrappedText
+        .map(
+          (line, index) =>
+            `<text class="title" x="0" y="${index * 50}">${line}</text>`
+        )
+        .join("")}
+    </g>
   
-  <!-- Review text -->
-=======
-
-  <!-- Titre avec mise à ligne automatique -->
-  <foreignObject x="50" y="100" width="${
-    svgWidth - 20
-  }" height="100"> <!-- Hauteur augmentée -->
-  <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
-    ${review.experience}
-  </div>
-</foreignObject>
-
-  <!-- Lignes de Titre -->
->>>>>>> 0192d385890b6a3f6cf1d129398a3d2916e43eb4
-  <g transform="translate(50, 100)">
-    ${wrappedText
-      .map(
-        (line, index) =>
-          `<text class="title" x="0" y="${index * 50}">${line}</text>`
-      )
-      .join("")}
-  </g>
-
-  <!-- Reviewer name -->
-  <g transform="translate(50, 300)">
-    <text class="review-text">${text_2} ${review.username}</text>
-  </g>
-
-  <!-- Rating stars -->
-  <g transform="translate(50, 400)">
-    <image href="${imageBase64Rating}" height="50" width="250" />
-    <text class="rating" transform="translate(270, 35)">
-      ${rating} / 5
-    </text>
-  </g>
-
-  <!-- Number of reviews -->
-  <g transform="translate(50, 500)">
-    <text class="rating">${company.total_reviews} ${text_3}</text>
-  </g>
-
-  <!-- Company logo -->
-  <g transform="translate(1000, 550)">
-    <image href="${imageBase64Logo}" height="50" width="150" />
-  </g>
-</svg>
-`;
+    <!-- Reviewer name -->
+    <g transform="translate(50, 300)">
+      <text class="review-text">${text_2} ${review.username}</text>
+    </g>
+  
+    <!-- Rating stars -->
+    <g transform="translate(50, 400)">
+      <image href="${imageBase64Rating}" height="50" width="250" />
+      <text class="rating" transform="translate(270, 35)">
+        ${rating} / 5
+      </text>
+    </g>
+  
+    <!-- Number of reviews -->
+    <g transform="translate(50, 500)">
+      <text class="rating">${company.total_reviews} ${text_3}</text>
+    </g>
+  
+    <!-- Company logo -->
+    <g transform="translate(1000, 550)">
+      <image href="${imageBase64Logo}" height="50" width="150" />
+    </g>
+  </svg>
+  `;
 
   const imageBuffer = await sharp(Buffer.from(svgImage))
     .resize(1200, 630)
