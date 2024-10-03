@@ -170,9 +170,7 @@ async function handler(req, res) {
     });
   }
   const text =
-    locale === "de"
-      ? `${text_1} ${review.company_name}: ${ratingText}`
-      : ` ${review.company_name} ${text_1} ${ratingText}`;
+    locale === "de" ? `${review.experience}` : ` ${review.experience}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
@@ -233,14 +231,14 @@ async function handler(req, res) {
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
-      <text class="rating" transform="translate(270, 35)">
-        ${rating} / 5
-      </text>
+      <text class="review-text">${text_2} ${review.username}</text>
     </g>
   
     <!-- Number of reviews -->
     <g transform="translate(50, 500)">
-      <text class="rating">${company.total_reviews} ${text_3}</text>
+      <text class="rating">${text_3} ${rating} / 5  | ${
+    company.total_reviews
+  } ${text_3}</text>
     </g>
   
     <!-- Company logo -->
