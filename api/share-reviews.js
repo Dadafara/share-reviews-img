@@ -251,8 +251,8 @@ async function handler(req, res) {
     .split("\n")
     .map(
       (line, index) =>
-        `<text class="title" x="10" y="${
-          index * 36
+        `<text class="title" x="15" y="${
+          index * 39
         }" text-anchor="start">${line}</text>`
     )
     .join("")}
