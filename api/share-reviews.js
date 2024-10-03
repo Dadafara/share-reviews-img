@@ -191,7 +191,7 @@ async function handler(req, res) {
           src: url("${helveticaBoldPath}");
         }
         .title {
-          font-size: 30px;
+          font-size: 50px;
           font-family: "Helvetica";
           text-anchor: start;
           fill: #000;
@@ -230,8 +230,8 @@ async function handler(req, res) {
     </g>
   
     <!-- Rating stars -->
-    <g transform="translate(50, 400) ${titleY}">
-      <image href="${imageBase64Rating}" height="150" width="250" />
+    <g transform="translate(50, 400)">
+      <image href="${imageBase64Rating}" height="50" width="250" />
       <text class="rating" transform="translate(270, 35)">
         ${text_2} ${review.username}
       </text>
@@ -242,7 +242,7 @@ async function handler(req, res) {
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
         <text class="rating" transform="translate(0, 35)">
-            ${text_1} ${rating} / 5 | ${company.reviews.length} ${text_3}
+            ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
         </text>
     <g transform="translate(${svgWidth - 300}, 0)">
       <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
