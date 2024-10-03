@@ -193,75 +193,66 @@ async function handler(req, res) {
         src: url("${helveticaBoldPath}");
       }
       .title {
-        font-size: 72px;
+        font-size: 50px;
         font-family: "Helvetica";
-        text-anchor: start;
-      }
-      .title_2 {
-        font-size: 72px;
-        font-family: "Helvetica";
-        text-anchor: start;
         font-weight: bold;
+        text-anchor: start;
+        fill: #000;
       }
-      .rating {
+      .rating-text {
         font-size: 30px;
         font-family: "Helvetica";
         text-anchor: start;
+        fill: #000;
+      }
+      .img-rating {
+        transform: translate(0, 20);
       }
     </style>
   </defs>
   <rect width="100%" height="100%" fill="white"/>
 
-  <!-- Title Rows -->
-  ${wrappedText
-    .map(
-      (line, index) => `
-    <g transform="translate(${leftMargin}, ${titleY + index * 80})">
-      <text class="title">${review.experience}
-      </text>
-    </g>
-  `
-    )
-    .join("")}
-
-  <g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-    <text class="rating">${text_2}
-
- ${review.username}</text>
+  <!-- Lignes de Titre -->
+  <g transform="translate(50, 100)">
+    <text class="title" x="0" y="0">
+      ${review.experience}
+    </text>
   </g>
 
-  <!-- Rating Image Row -->
-  <g transform="translate(${leftMarginRatting}, ${
-    titleY + wrappedText.length * 80 + 20 + 10
-  })">
+  <!-- Nom du Critique -->
+  <g transform="translate(50, 200)">
+    <text class="rating-text">
+      ${text_2} ${review.username}
+    </text>
+  </g>
+
+  <!-- Étoiles de la Note -->
+  <g transform="translate(50, 250)">
     <image
       class="img-rating"
       href="${imageBase64Rating}"
-      height="100"
-      width="300"
+      height="50"
+      width="250"
     />
-    <text class="rating" transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">${text_2} ${review.username}</text>
-  </g>
-<g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-  <text class="rating">
- ${company.total_reviews} ${text_2}</text>
+    <text class="rating-text" transform="translate(270, 20)">
+      ${rating} / 5
+    </text>
   </g>
 
-  <!-- Logo Row -->
-  <g transform="translate(${leftMarginLogo}, ${
-    titleY + wrappedText.length * 80 + 80 + 60
-  })">
+  <!-- Total des Critiques -->
+  <g transform="translate(50, 320)">
+    <text class="rating-text">
+      ${company.total_reviews} ${text_3}
+    </text>
+  </g>
+
+  <!-- Logo -->
+  <g transform="translate(850, 450)">
     <image
       class="img-logo"
       href="${imageBase64Logo}"
-      height="100"
-      width="350"
+      height="50"
+      width="150"
     />
   </g>
 </svg>
