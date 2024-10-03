@@ -253,7 +253,9 @@ async function handler(req, res) {
       width="350"
     />
   </g>
-
+<g transform="translate(${leftMarginText}, ${
+    titleY + wrappedText.length * 80 + 50
+  })">
   <text class="rating">
  ${company.total_reviews} ${text_2}</text>
   </g>
