@@ -2,8 +2,11 @@ const axios = require("axios");
 const sharp = require("sharp");
 const path = require("path");
 
-path.resolve(process.cwd(), "fonts", "fonts.conf");
-path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
+const pathToFonts = path.resolve(process.cwd(), "fonts");
+
+process.env.FONTCONFIG_PATH = pathToFonts;
+
+const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
 // path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
@@ -189,7 +192,7 @@ async function handler(req, res) {
     <style type="text/css">
       @font-face {
         font-family: "Helvetica";
-        src: url("./fonts/Helvetica Bold.ttf");
+        src: url("${helveticaBoldPath}");
       }
       .title {
         font-size: 72px;
