@@ -180,7 +180,33 @@ async function handler(req, res) {
   const leftMarginLogo = 135;
   const titleY = 150;
 
+  function truncateText(text, maxLines) {
+    const words = text.split(" ");
+    let truncatedText = "";
+    let lineCount = 0;
+    let line = "";
+
+    words.forEach((word) => {
+      if ((line + word).length < 40) {
+        // Ajustez 40 en fonction de la longueur souhaitée pour une ligne
+        line += word + " ";
+      } else {
+        truncatedText += line.trim() + "\n";
+        line = word + " ";
+        lineCount++;
+      }
+      if (lineCount >= maxLines) {
+        truncatedText += "..."; // Ajouter des points de suspension si le texte dépasse la limite
+        return;
+      }
+    });
+
+    truncatedText += line.trim();
+    return truncatedText;
+  }
+
   const wrappedText = wrapText(text, 80);
+  const truncatedText = truncateText(review.experience, 6);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -220,14 +246,17 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
     
     <!-- Review text -->
-    <g transform="translate(50, 100)">
-      ${wrappedText
-        .map(
-          (line, index) =>
-            `<text class="title" x="10" y="${index * 36}">${line}</text>`
-        )
-        .join("")}
-    </g>
+<g transform="translate(50, 100)">
+  ${truncatedText
+    .split("\n")
+    .map(
+      (line, index) =>
+        `<text class="title" x="10" y="${
+          index * 36
+        }" text-anchor="start">${line}</text>`
+    )
+    .join("")}
+</g>
   
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
