@@ -223,11 +223,6 @@ async function handler(req, res) {
         .join("")}
     </g>
   
-    <!-- Reviewer name -->
-    <g transform="translate(50, 300)">
-      <text class="review-text">${text_2} ${review.username}</text>
-    </g>
-  
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
