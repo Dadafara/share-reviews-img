@@ -150,8 +150,22 @@ async function handler(req, res) {
     </style>
   </defs>
   <rect width="100%" height="100%" fill="white"/>
+<<<<<<< HEAD
   
   <!-- Review text -->
+=======
+
+  <!-- Titre avec mise à ligne automatique -->
+  <foreignObject x="50" y="100" width="${
+    svgWidth - 20
+  }" height="100"> <!-- Hauteur augmentée -->
+  <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
+    ${review.experience}
+  </div>
+</foreignObject>
+
+  <!-- Lignes de Titre -->
+>>>>>>> 0192d385890b6a3f6cf1d129398a3d2916e43eb4
   <g transform="translate(50, 100)">
     ${wrappedText
       .map(
