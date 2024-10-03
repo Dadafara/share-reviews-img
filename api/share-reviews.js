@@ -250,6 +250,7 @@ async function handler(req, res) {
       height="150"
       width="350"
     />
+    <text class="rating">${text_2} ${review.username}</text>
   </g>
 <g transform="translate(${leftMarginText}, ${
     titleY + wrappedText.length * 80 + 50
