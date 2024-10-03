@@ -180,7 +180,7 @@ async function handler(req, res) {
   const leftMarginLogo = 135;
   const titleY = 150;
 
-  const wrappedText = wrapText(text, 2);
+  const wrappedText = wrapText(text, 80);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
