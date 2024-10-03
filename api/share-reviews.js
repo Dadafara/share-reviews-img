@@ -3,9 +3,7 @@ const sharp = require("sharp");
 const path = require("path");
 
 const pathToFonts = path.resolve(process.cwd(), "fonts");
-
 process.env.FONTCONFIG_PATH = pathToFonts;
-
 const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
 // path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
@@ -195,7 +193,7 @@ async function handler(req, res) {
         src: url("${helveticaBoldPath}");
       }
       .title {
-        font-size: 10px;
+        font-size: 72px;
         font-family: "Helvetica";
         text-anchor: start;
       }
