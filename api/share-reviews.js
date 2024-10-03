@@ -209,6 +209,10 @@ async function handler(req, res) {
           text-anchor: start;
           fill: #000;
         }
+        .line {
+          stroke: black;
+          stroke-width: 0.5;
+        }
       </style>
     </defs>
     <rect width="100%" height="100%" fill="white"/>
@@ -218,7 +222,7 @@ async function handler(req, res) {
       ${wrappedText
         .map(
           (line, index) =>
-            `<text class="title" x="10" y="${index * 30}">${line}</text>`
+            `<text class="title" x="10" y="${index * 36}">${line}</text>`
         )
         .join("")}
     </g>
@@ -231,16 +235,17 @@ async function handler(req, res) {
       </text>
     </g>
   
-    <!-- Number of reviews -->
-    <g transform="translate(50, 500)">
-      <text class="rating">${text_3} ${rating} / 5  | ${
-    company.total_reviews
-  } ${text_3}</text>
-    </g>
+    <!-- Black line above Number of reviews and Company logo -->
+    <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
-    <!-- Company logo -->
-    <g transform="translate(1000, 550)">
-      <image href="${imageBase64Logo}" height="50" width="150" />
+    <!-- Number of reviews and Company logo -->
+    <g transform="translate(50, 500)">
+      <text class="rating" transform="translate(0, 35)">
+        ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
+      </text>
+      <g transform="translate(${svgWidth - 250}, 0)">
+        <image href="${imageBase64Logo}" height="50" width="150" />
+      </g>
     </g>
   </svg>
   `;
