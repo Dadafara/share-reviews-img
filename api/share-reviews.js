@@ -243,7 +243,7 @@ async function handler(req, res) {
             ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
         </text>
     <g transform="translate(${svgWidth - 300}, 0)">
-      <image href="${imageBase64Logo}" height="70" width="200" />
+      <image href="${imageBase64Logo}" height="50" width="250" />
     </g>
   </g>
   </svg>
