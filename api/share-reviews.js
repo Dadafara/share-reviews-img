@@ -8,43 +8,36 @@ path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
 
 const languageRatings = {
   en: {
-    ratings: ["Bad", "Low", "Medium", "Great", "Excellent"],
     text_1: "Rated",
     text_2: "by",
     text_3: "reviews",
   },
   fr: {
-    ratings: ["Mauvais", "Bas", "Moyen", "Bien", "Excellent"],
     text_1: "Noté",
     text_2: "par",
     text_3: "avis",
   },
   de: {
-    ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
     text_1: "Bewertet",
     text_2: "von",
     text_3: "Bewertungen",
   },
   it: {
-    ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
     text_1: "Valutato",
     text_2: "da",
     text_3: "recensioni",
   },
   pt: {
-    ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
     text_1: "Avaliado",
     text_2: "por",
     text_3: "opiniões",
   },
   es: {
-    ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
     text_1: "Calificado",
     text_2: "por",
     text_3: "opiniones",
   },
   nl: {
-    ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
     text_1: "Beoordeeld",
     text_2: "door",
     text_3: "beoordelingen",
@@ -131,7 +124,7 @@ async function handler(req, res) {
     });
   }
 
-  const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
+  const { text_1, text_2, text_3 } = getLanguageData(locale);
 
   let company, review;
   try {
@@ -248,12 +241,6 @@ async function handler(req, res) {
     titleY + wrappedText.length * 80 + 50
   })">${text_2} ${review.username}</text>
   </g>
-<g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-  <text class="rating">
- ${company.total_reviews} ${text_2}</text>
-  </g>
 
   <!-- Logo Row -->
   <g transform="translate(${leftMarginLogo}, ${
@@ -265,6 +252,13 @@ async function handler(req, res) {
       height="100"
       width="350"
     />
+  </g>
+
+  <g transform="translate(${leftMarginText}, ${
+    titleY + wrappedText.length * 80 + 50
+  })">
+  <text class="rating">
+ ${company.total_reviews} ${text_3}</text>
   </g>
 </svg>
 `;
