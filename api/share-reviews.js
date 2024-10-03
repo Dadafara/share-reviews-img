@@ -214,7 +214,7 @@ async function handler(req, res) {
 
   <!-- Titre avec mise à ligne automatique -->
   <foreignObject x="50" y="100" width="${
-    svgWidth - 100
+    svgWidth - 20
   }" height="100"> <!-- Hauteur augmentée -->
   <div xmlns="http://www.w3.org/1999/xhtml" class="title" style="font-size: 50px; font-family: Helvetica; font-weight: bold; color: black; line-height: 1.2;">
     ${review.experience}
