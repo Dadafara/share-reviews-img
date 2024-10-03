@@ -225,10 +225,9 @@ async function handler(req, res) {
     .map(
       (line, index) => `
     <g transform="translate(${leftMargin}, ${titleY + index * 80})">
-      <text class="title">${line.replace(
-        ratingText,
-        `<tspan class="title_2">${ratingText} ${review.experience}}</tspan>`
-      )}</text>
+      <text class="title">
+        <tspan class="title_2">${ratingText} ${review.experience}}</tspan>
+      </text>
     </g>
   `
     )
