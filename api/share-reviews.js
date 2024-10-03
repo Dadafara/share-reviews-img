@@ -191,7 +191,7 @@ async function handler(req, res) {
           src: url("${helveticaBoldPath}");
         }
         .title {
-          font-size: 50px;
+          font-size: 30px;
           font-family: "Helvetica";
           text-anchor: start;
           fill: #000;
@@ -213,7 +213,7 @@ async function handler(req, res) {
           stroke-width: 0.5;
         }
         .logo {
-          font-size: 0px;
+          font-size: 30px;
         }
       </style>
     </defs>
