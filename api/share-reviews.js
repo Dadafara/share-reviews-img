@@ -247,10 +247,12 @@ async function handler(req, res) {
     <image
       class="img-rating"
       href="${imageBase64Rating}"
-      height="150"
-      width="350"
+      height="100"
+      width="300"
     />
-    <text class="rating">${text_2} ${review.username}</text>
+    <text class="rating" transform="translate(${leftMarginText}, ${
+    titleY + wrappedText.length * 80 + 50
+  })">${text_2} ${review.username}</text>
   </g>
 <g transform="translate(${leftMarginText}, ${
     titleY + wrappedText.length * 80 + 50
