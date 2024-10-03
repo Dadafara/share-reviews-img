@@ -195,7 +195,7 @@ async function handler(req, res) {
         src: url("${helveticaBoldPath}");
       }
       .title {
-        font-size: 72px;
+        font-size: 10px;
         font-family: "Helvetica";
         text-anchor: start;
       }
