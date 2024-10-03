@@ -191,7 +191,7 @@ async function handler(req, res) {
           src: url("${helveticaBoldPath}");
         }
         .title {
-          font-size: 48px;
+          font-size: 30px;
           font-family: "Helvetica";
           font-weight: bold;
           text-anchor: start;
@@ -218,7 +218,7 @@ async function handler(req, res) {
       ${wrappedText
         .map(
           (line, index) =>
-            `<text class="title" x="0" y="${index * 50}">${line}</text>`
+            `<text class="title" x="0" y="${index * 100}">${line}</text>`
         )
         .join("")}
     </g>
@@ -231,7 +231,9 @@ async function handler(req, res) {
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
-      <text class="review-text">${text_2} ${review.username}</text>
+      <text class="rating" transform="translate(270, 35)">
+        ${text_2} ${review.username}
+      </text>
     </g>
   
     <!-- Number of reviews -->
