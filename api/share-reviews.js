@@ -21,33 +21,33 @@ const languageRatings = {
   },
   de: {
     ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
-    text_1: "",
-    text_2: "",
+    text_1: "Bewertet",
+    text_2: "von",
     text_3: "Bewertungen",
   },
   it: {
     ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Valutato",
+    text_2: "da",
     text_3: "recensioni",
   },
   pt: {
     ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Avaliado",
+    text_2: "por",
     text_3: "opiniões",
   },
   es: {
     ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Calificado",
+    text_2: "por",
     text_3: "opiniones",
   },
   nl: {
     ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
-    text_1: "",
-    text_2: "",
-    text_3: "beoordelinge",
+    text_1: "Beoordeeld",
+    text_2: "door",
+    text_3: "beoordelingen",
   },
 };
 
@@ -187,10 +187,14 @@ async function handler(req, res) {
 <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style type="text/css">
-      @font-face {
-        font-family: "Helvetica";
-        src: "./fonts/Helvetica Bold.ttf";
-      }
+        @font-face {
+            font-family: "Helvetica";
+            src: url("${path.resolve(
+              process.cwd(),
+              "fonts",
+              "Helvetica Bold.ttf"
+            )}") format("truetype");
+          }
       .title {
         font-size: 72px;
         font-family: "Helvetica";
