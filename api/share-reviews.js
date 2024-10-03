@@ -239,13 +239,13 @@ async function handler(req, res) {
   
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
-      <text class="rating" transform="translate(0, 35)">
-        ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
-      </text>
-      <g transform="translate(${svgWidth - 250}, 0)">
-        <image href="${imageBase64Logo}" height="90" width="150" />
-      </g>
+        <text class="rating" transform="translate(0, 35)">
+            ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
+        </text>
+    <g transform="translate(${svgWidth - 300}, 0)">
+      <image href="${imageBase64Logo}" height="70" width="200" />
     </g>
+  </g>
   </svg>
   `;
 
