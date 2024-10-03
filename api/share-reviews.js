@@ -4,7 +4,6 @@ const path = require("path");
 
 path.resolve(process.cwd(), "fonts", "fonts.conf");
 path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
-// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -182,6 +181,7 @@ async function handler(req, res) {
   const titleY = 150;
 
   const wrappedText = wrapText(text, 27);
+  const fontData = fs.readFileSync(fontPath).toString("base64");
 
   const svgImage = `
 <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +189,7 @@ async function handler(req, res) {
     <style type="text/css">
       @font-face {
         font-family: "Helvetica";
-        src: "./fonts/Helvetica Bold.ttf";
+        src: url('data:font/ttf;base64,${fontData}') format("truetype");
       }
       .title {
         font-size: 72px;
