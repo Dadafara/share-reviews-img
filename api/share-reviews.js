@@ -5,6 +5,7 @@ const path = require("path");
 const pathToFonts = path.resolve(process.cwd(), "fonts");
 process.env.FONTCONFIG_PATH = pathToFonts;
 const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
+// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -73,7 +74,7 @@ function roundToHalf(x) {
   } else if (x > 4.7 && x <= 5) {
     return 5;
   } else {
-    return x;
+    return x; // handle cases where x > 5 or x < 0, if needed
   }
 }
 
@@ -118,7 +119,6 @@ async function handler(req, res) {
     res
       .status(400)
       .json({ error: "Missing required query parameters 'data' or 'locale'." });
-    return;
   }
 
   function isValidLocale(locale) {
@@ -130,7 +130,6 @@ async function handler(req, res) {
     res.status(404).json({
       error: "Locale not supported",
     });
-    return;
   }
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
@@ -169,42 +168,19 @@ async function handler(req, res) {
     res.status(500).json({
       error: "Error converting images to Base64.",
     });
-    return;
   }
-
   const text =
     locale === "de" ? `${review.experience}` : ` ${review.experience}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
+  const leftMargin = 150;
+  const leftMarginText = 150;
+  const leftMarginRatting = 150;
+  const leftMarginLogo = 135;
+  const titleY = 150;
 
-  // Fonction pour tronquer le texte
-  function truncateText(text, maxLines) {
-    const words = text.split(" ");
-    let truncatedText = "";
-    let lineCount = 0;
-    let line = "";
-
-    words.forEach((word) => {
-      if ((line + word).length < 40) {
-        line += word + " ";
-      } else {
-        truncatedText += line.trim() + "\n";
-        line = word + " ";
-        lineCount++;
-      }
-      if (lineCount >= maxLines) {
-        truncatedText += "...";
-        return truncatedText;
-      }
-    });
-
-    truncatedText += line.trim();
-    return truncatedText;
-  }
-
-  // On appelle truncateText sans redéclarer wrappedText
-  const truncatedText = truncateText(review.experience, 4);
+  const wrappedText = wrapText(text, 2);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -238,7 +214,7 @@ async function handler(req, res) {
           stroke-width: 0.5;
         }
         .logo {
-          font-size: 40px;
+          font-size: 0px;
         }
       </style>
     </defs>
@@ -246,13 +222,20 @@ async function handler(req, res) {
     
     <!-- Review text -->
     <g transform="translate(50, 100)">
-      ${truncatedText
-        .split("\n")
+      ${wrappedText
         .map(
           (line, index) =>
             `<text class="title" x="10" y="${index * 36}">${line}</text>`
         )
         .join("")}
+    </g>
+  
+    <!-- Rating stars -->
+    <g transform="translate(50, 400)">
+      <image href="${imageBase64Rating}" height="50" width="250" />
+      <text class="rating" transform="translate(270, 35)">
+        ${text_2} ${review.username}
+      </text>
     </g>
   
     <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
@@ -262,22 +245,23 @@ async function handler(req, res) {
         <text class="rating" transform="translate(0, 35)">
             ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
         </text>
-    <g transform="translate(${svgWidth - 150}, 0)">
-        <image href="${imageBase64Logo}" x="0" y="0" height="100px" width="100px"/>
-        <image href="${imageBase64Rating}" x="100" y="0" height="50px" width="50px"/>
-      </g>
+    <g transform="translate(${svgWidth - 300}, 0)">
+      <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
     </g>
-  </svg>`;
+  </g>
+  </svg>
+  `;
 
   const imageBuffer = await sharp(Buffer.from(svgImage))
-    .toFormat("png")
+    .resize(1200, 630)
+    .png({ quality: 100 })
+    .withMetadata({ density: 300 })
     .toBuffer();
-
-  res.writeHead(200, {
-    "Content-Type": "image/png",
-    "Content-Length": imageBuffer.length,
-  });
-  res.end(imageBuffer);
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader(
+    "Cache-Control",
+    `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
+  );
+  res.send(imageBuffer);
 }
-
 module.exports = handler;
