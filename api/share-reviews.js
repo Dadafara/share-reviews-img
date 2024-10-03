@@ -182,6 +182,35 @@ async function handler(req, res) {
 
   const wrappedText = wrapText(text, 27);
 
+  // Fonction pour tronquer le texte
+  function truncateText(text, maxLines) {
+    const words = text.split(" ");
+    let truncatedText = "";
+    let lineCount = 0;
+    let line = "";
+
+    words.forEach((word) => {
+      if ((line + word).length < 40) {
+        // Ajustez 40 en fonction de la longueur souhaitée pour une ligne
+        line += word + " ";
+      } else {
+        truncatedText += line.trim() + "\n";
+        line = word + " ";
+        lineCount++;
+      }
+      if (lineCount >= maxLines) {
+        truncatedText += "...";
+        return truncatedText;
+      }
+    });
+
+    truncatedText += line.trim();
+    return truncatedText;
+  }
+
+  // Appel de la fonction avec le texte de l'avis et une limite de 4 lignes
+  const wrappedText = truncateText(review.experience, 4);
+
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -214,7 +243,7 @@ async function handler(req, res) {
           stroke-width: 0.5;
         }
         .logo {
-          font-size: 30px;
+          font-size: 40px;
         }
       </style>
     </defs>
@@ -231,12 +260,15 @@ async function handler(req, res) {
     </g>
   
     <!-- Rating stars -->
-    <g transform="translate(50, 400)">
-      <image href="${imageBase64Rating}" height="50" width="250" />
-      <text class="rating" transform="translate(270, 35)">
-        ${text_2} ${review.username}
-      </text>
-    </g>
+    <g transform="translate(50, 100)">
+  ${wrappedText
+    .split("\n")
+    .map(
+      (line, index) =>
+        `<text class="title" x="10" y="${index * 36}">${line}</text>`
+    )
+    .join("")}
+</g>
   
     <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
