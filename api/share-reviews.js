@@ -218,7 +218,7 @@ async function handler(req, res) {
       ${wrappedText
         .map(
           (line, index) =>
-            `<text class="title" x="0" y="${index * 10}">${line}</text>`
+            `<text class="title" x="10" y="${index * 30}">${line}</text>`
         )
         .join("")}
     </g>
