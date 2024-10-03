@@ -4,7 +4,6 @@ const path = require("path");
 
 path.resolve(process.cwd(), "fonts", "fonts.conf");
 path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
-// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -21,60 +20,50 @@ const languageRatings = {
   },
   de: {
     ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
-    text_1: "",
-    text_2: "",
+    text_1: "Bewertet",
+    text_2: "von",
     text_3: "Bewertungen",
   },
   it: {
     ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Valutato",
+    text_2: "da",
     text_3: "recensioni",
   },
   pt: {
     ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Avaliado",
+    text_2: "por",
     text_3: "opiniões",
   },
   es: {
     ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
-    text_1: "",
-    text_2: "",
+    text_1: "Calificado",
+    text_2: "por",
     text_3: "opiniones",
   },
   nl: {
     ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
-    text_1: "",
-    text_2: "",
-    text_3: "beoordelinge",
+    text_1: "Beoordeeld",
+    text_2: "door",
+    text_3: "beoordelingen",
   },
 };
 
 function roundToHalf(x) {
-  if (x === 0) {
-    return 0;
-  } else if (x > 0 && x <= 1) {
-    return 1;
-  } else if (x > 1 && x <= 1.7) {
-    return 1.5;
-  } else if (x > 1.7 && x <= 2) {
-    return 2;
-  } else if (x > 2 && x <= 2.7) {
-    return 2.5;
-  } else if (x > 2.7 && x <= 3) {
-    return 3;
-  } else if (x > 3 && x <= 3.7) {
-    return 3.5;
-  } else if (x > 3.7 && x <= 4) {
-    return 4;
-  } else if (x > 4 && x <= 4.7) {
-    return 4.5;
-  } else if (x > 4.7 && x <= 5) {
-    return 5;
-  } else {
-    return x; // handle cases where x > 5 or x < 0, if needed
-  }
+  const roundedValues = [
+    { max: 0, value: 0 },
+    { max: 1, value: 1 },
+    { max: 1.7, value: 1.5 },
+    { max: 2, value: 2 },
+    { max: 2.7, value: 2.5 },
+    { max: 3, value: 3 },
+    { max: 3.7, value: 3.5 },
+    { max: 4, value: 4 },
+    { max: 4.7, value: 4.5 },
+    { max: 5, value: 5 },
+  ];
+  return roundedValues.find((item) => x <= item.max)?.value || x;
 }
 
 const CDN_BASE_URL = "https://www.starevaluator.com";
@@ -104,56 +93,44 @@ function wrapText(text, maxLength) {
 }
 
 async function fetchImageToBase64(url) {
-  const response = await axios.get(url, {
-    responseType: "arraybuffer",
-  });
-  const base64String = Buffer.from(response.data, "binary").toString("base64");
-  return `data:image/png;base64,${base64String}`;
+  const response = await axios.get(url, { responseType: "arraybuffer" });
+  return `data:image/png;base64,${Buffer.from(response.data, "binary").toString(
+    "base64"
+  )}`;
 }
 
 async function handler(req, res) {
   const { data, locale } = req.query;
 
   if (!data || !locale) {
-    res
+    return res
       .status(400)
       .json({ error: "Missing required query parameters 'data' or 'locale'." });
   }
 
-  function isValidLocale(locale) {
-    const supportedLocales = ["fr", "de", "pt", "nl", "it", "es", "en"];
-    return locale ? supportedLocales.includes(locale) : false;
-  }
-
-  if (!isValidLocale(locale)) {
-    res.status(404).json({
-      error: "Locale not supported",
-    });
+  const supportedLocales = ["fr", "de", "pt", "nl", "it", "es", "en"];
+  if (!supportedLocales.includes(locale)) {
+    return res.status(404).json({ error: "Locale not supported." });
   }
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let company;
+  let company, review;
   try {
-    const response = await axios(
-      `https://api-starevaluator.com/api/company/id/${data}`
-    );
-    company = response.data;
+    const [companyResponse, reviewResponse] = await Promise.all([
+      axios(`https://api-starevaluator.com/api/company/id/${data}`),
+      axios(`https://api-starevaluator.com/api/review/id/${data}`),
+    ]);
+    company = companyResponse.data;
+    review = reviewResponse.data;
   } catch (error) {
-    res.status(500).json({
-      error: "Error fetching review data.",
-    });
+    return res
+      .status(500)
+      .json({ error: "Error fetching company or review data." });
   }
-  let review;
-  try {
-    const response = await axios(
-      `https://api-starevaluator.com/api/review/id/${data}`
-    );
-    review = response.data;
-  } catch (error) {
-    res.status(500).json({
-      error: "Error fetching review data.",
-    });
+
+  if (!review || !company) {
+    return res.status(404).json({ error: "Company or review data not found." });
   }
 
   const ratingIndex = Math.min(Math.floor(review.note), 4);
@@ -163,128 +140,78 @@ async function handler(req, res) {
   const imageURLLogo = `${CDN_BASE_URL}/star-evaluator-bleu.png`;
   const imageURLRating = `${CDN_BASE_URL}/ratings/${rating}.png`;
 
-  let imageBase64Logo;
-  let imageBase64Rating;
-
+  let imageBase64Logo, imageBase64Rating;
   try {
     [imageBase64Logo, imageBase64Rating] = await Promise.all([
       fetchImageToBase64(imageURLLogo),
       fetchImageToBase64(imageURLRating),
     ]);
   } catch (error) {
-    console.error("Error converting images to Base64:", error);
-    res.status(500).json({
-      error: "Error converting images to Base64.",
-    });
+    return res
+      .status(500)
+      .json({ error: "Error converting images to Base64." });
   }
-  const text =
-    locale === "de"
-      ? `${text_1} ${review.company_name}: ${ratingText}`
-      : ` ${review.company_name} ${text_1} ${ratingText}`;
 
-  const svgWidth = 1200;
-  const svgHeight = 630;
-  const leftMargin = 150;
-  const leftMarginText = 150;
-  const leftMarginRatting = 150;
-  const leftMarginLogo = 135;
-  const titleY = 150;
+  const wrappedCompanyName = wrapText(company.name, 20);
 
-  const wrappedText = wrapText(text, 27);
+  const svgWidth = 600;
+  const svgHeight = 450;
 
   const svgImage = `
-<svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <style type="text/css">
-      @font-face {
-        font-family: "Helvetica";
-        src: "./fonts/Helvetica Bold.ttf";
-      }
-      .title {
-        font-size: 72px;
-        font-family: "Helvetica";
-        text-anchor: start;
-      }
-      .title_2 {
-        font-size: 72px;
-        font-family: "Helvetica";
-        text-anchor: start;
-        font-weight: bold;
-      }
-      .rating {
-        font-size: 30px;
-        font-family: "Helvetica";
-        text-anchor: start;
-      }
-    </style>
-  </defs>
-  <rect width="100%" height="100%" fill="white"/>
+    <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style type="text/css">
+          @font-face {
+            font-family: "Helvetica";
+            src: url("${path.resolve(
+              process.cwd(),
+              "fonts",
+              "Helvetica Bold.ttf"
+            )}") format("truetype");
+          }
+          .title {
+            font-size: 72px;
+            font-family: "Helvetica";
+            text-anchor: start;
+          }
+          .title_2 {
+            font-size: 72px;
+            font-family: "Helvetica";
+            text-anchor: start;
+            font-weight: bold;
+          }
+          .rating {
+            font-size: 30px;
+            font-family: "Helvetica";
+            text-anchor: start;
+          }
+        </style>
+      </defs>
+      <rect width="100%" height="100%" fill="white"/>
+      <image 
+      href="${imageBase64Logo}" 
+      x="40" 
+      y="40" 
+      width="50" 
+      height="50"/>
+      <text 
+      class="title" 
+      x="120" 
+      y="80">${text_1}</text>
+      <text class="title_2" x="280" y="80">${company.name}</text>
+      <image href="${imageBase64Rating}" x="400" y="120" width="100" height="100"/>
+      <text class="rating" x="120" y="120">${ratingText} ${rating}</text>
+      <text class="rating" x="120" y="160">${text_2} ${
+    review.total_reviews
+  } ${text_3}</text>
+    </svg>
+  `;
 
-  <!-- Title Rows -->
-  ${wrappedText
-    .map(
-      (line, index) => `
-    <g transform="translate(${leftMargin}, ${titleY + index * 80})">
-      <text class="title">${review.experience}
-      </text>
-    </g>
-  `
-    )
-    .join("")}
+  const svgBuffer = Buffer.from(svgImage);
 
-  <g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-    <text class="rating">${text_2}
-
- ${review.username}</text>
-  </g>
-
-  <!-- Rating Image Row -->
-  <g transform="translate(${leftMarginRatting}, ${
-    titleY + wrappedText.length * 80 + 20 + 10
-  })">
-    <image
-      class="img-rating"
-      href="${imageBase64Rating}"
-      height="100"
-      width="300"
-    />
-    <text class="rating" transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">${text_2} ${review.username}</text>
-  </g>
-<g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-  <text class="rating">
- ${company.total_reviews} ${text_2}</text>
-  </g>
-
-  <!-- Logo Row -->
-  <g transform="translate(${leftMarginLogo}, ${
-    titleY + wrappedText.length * 80 + 80 + 60
-  })">
-    <image
-      class="img-logo"
-      href="${imageBase64Logo}"
-      height="100"
-      width="350"
-    />
-  </g>
-</svg>
-`;
-
-  const imageBuffer = await sharp(Buffer.from(svgImage))
-    .resize(1200, 630)
-    .png({ quality: 100 })
-    .withMetadata({ density: 300 })
-    .toBuffer();
-  res.setHeader("Content-Type", "image/png");
-  res.setHeader(
-    "Cache-Control",
-    `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
-  );
-  res.send(imageBuffer);
+  const pngImage = await sharp(svgBuffer).png().toBuffer();
+  res.set("Content-Type", "image/png");
+  res.send(pngImage);
 }
+
 module.exports = handler;
