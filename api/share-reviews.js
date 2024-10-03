@@ -9,44 +9,44 @@ path.resolve(process.cwd(), "fonts", "Helvetica Bold.ttf");
 const languageRatings = {
   en: {
     ratings: ["Bad", "Low", "Medium", "Great", "Excellent"],
-    text_1: "is rated",
-    text_2: "Based on",
+    text_1: "Rated",
+    text_2: "by",
     text_3: "reviews",
   },
   fr: {
     ratings: ["Mauvais", "Bas", "Moyen", "Bien", "Excellent"],
-    text_1: "est noté",
-    text_2: "Basé sur",
+    text_1: "Noté",
+    text_2: "par",
     text_3: "avis",
   },
   de: {
     ratings: ["Schlecht", "Niedrig", "Mittel", "Gut", "Ausgezeichnet"],
-    text_1: "Gesamtbewertung für",
-    text_2: "Basierend auf",
+    text_1: "",
+    text_2: "",
     text_3: "Bewertungen",
   },
   it: {
     ratings: ["Cattivo", "Basso", "Medio", "Buono", "Eccellente"],
-    text_1: "è valutata",
-    text_2: "Basata su",
+    text_1: "",
+    text_2: "",
     text_3: "recensioni",
   },
   pt: {
     ratings: ["Mau", "Baixo", "Médio", "Bom", "Excelente"],
-    text_1: "está classificada como",
-    text_2: "Baseado em",
+    text_1: "",
+    text_2: "",
     text_3: "opiniões",
   },
   es: {
     ratings: ["Malo", "Bajo", "Medio", "Bueno", "Excelente"],
-    text_1: "tiene una valoración de",
-    text_2: "En base a",
+    text_1: "",
+    text_2: "",
     text_3: "opiniones",
   },
   nl: {
     ratings: ["Slecht", "Laag", "Gemiddeld", "Goed", "Uitstekend"],
-    text_1: "beoordeeld",
-    text_2: "Gebaseerd op",
+    text_1: "",
+    text_2: "",
     text_3: "beoordelinge",
   },
 };
@@ -227,7 +227,7 @@ async function handler(req, res) {
     <g transform="translate(${leftMargin}, ${titleY + index * 80})">
       <text class="title">${line.replace(
         ratingText,
-        `<tspan class="title_2">${ratingText}</tspan>`
+        `<tspan class="title_2">${ratingText} ${review.experience}}</tspan>`
       )}</text>
     </g>
   `
@@ -239,7 +239,7 @@ async function handler(req, res) {
   })">
     <text class="rating">${text_2}
 
- ${company.reviews.length} ${text_3}</text>
+ ${review.username}</text>
   </g>
 
   <!-- Rating Image Row -->
@@ -252,6 +252,10 @@ async function handler(req, res) {
       height="150"
       width="350"
     />
+  </g>
+
+  <text class="rating">
+ ${company.total_reviews} ${text_2}</text>
   </g>
 
   <!-- Logo Row -->
