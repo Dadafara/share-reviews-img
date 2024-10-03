@@ -182,6 +182,7 @@ async function handler(req, res) {
   const titleY = 150;
 
   const wrappedText = wrapText(text, 27);
+  const fontPath = path.resolve(__dirname, "fonts", "Helvetica Bold.ttf");
   const fontData = fs.readFileSync(fontPath).toString("base64");
 
   const svgImage = `
