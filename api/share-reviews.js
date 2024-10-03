@@ -124,7 +124,7 @@ async function handler(req, res) {
     });
   }
 
-  const { text_1, text_2, text_3 } = getLanguageData(locale);
+  const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
   let company, review;
   try {
@@ -241,6 +241,12 @@ async function handler(req, res) {
     titleY + wrappedText.length * 80 + 50
   })">${text_2} ${review.username}</text>
   </g>
+<g transform="translate(${leftMarginText}, ${
+    titleY + wrappedText.length * 80 + 50
+  })">
+  <text class="rating">
+ ${company.total_reviews} ${text_3}</text>
+  </g>
 
   <!-- Logo Row -->
   <g transform="translate(${leftMarginLogo}, ${
@@ -252,13 +258,6 @@ async function handler(req, res) {
       height="100"
       width="350"
     />
-  </g>
-
-  <g transform="translate(${leftMarginText}, ${
-    titleY + wrappedText.length * 80 + 50
-  })">
-  <text class="rating">
- ${company.total_reviews} ${text_3}</text>
   </g>
 </svg>
 `;
