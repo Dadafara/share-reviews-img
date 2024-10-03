@@ -184,24 +184,6 @@ async function handler(req, res) {
 
   const wrappedText = wrapText(text, 27);
 
-  // Ensure base64 images are correctly formatted
-  if (!imageBase64Logo || !imageBase64Rating) {
-    console.error("One of the base64 images is missing or invalid.");
-    res
-      .status(500)
-      .json({ error: "Error fetching or converting images to Base64." });
-    return;
-  }
-
-  if (
-    !imageBase64Logo.startsWith("data:image") ||
-    !imageBase64Rating.startsWith("data:image")
-  ) {
-    console.error("Base64 string is not properly formatted.");
-    res.status(500).json({ error: "Base64 string is invalid or corrupt." });
-    return;
-  }
-
   const svgImage = `
 <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -210,45 +192,82 @@ async function handler(req, res) {
         font-family: "Helvetica";
         src: url("${helveticaBoldPath}");
       }
-      .title { font-size: 50px; font-family: "Helvetica"; font-weight: bold; fill: #000; }
-      .rating-text { font-size: 30px; font-family: "Helvetica"; fill: #000; }
-      .img-rating { transform: translate(0, 20); }
-      .line { stroke: #ccc; stroke-width: 2; }
-      .wrapped-text { font-size: 45px; font-family: "Helvetica"; font-weight: bold; fill: #000; }
+      .title {
+        font-size: 50px;
+        font-family: "Helvetica";
+        font-weight: bold;
+        text-anchor: start;
+        fill: #000;
+      }
+      .rating-text {
+        font-size: 30px;
+        font-family: "Helvetica";
+        text-anchor: start;
+        fill: #000;
+      }
+      .img-rating {
+        transform: translate(0, 20);
+      }
     </style>
   </defs>
   <rect width="100%" height="100%" fill="white"/>
-  
-  <!-- Text, lines, etc. as before -->
-  
-  <g transform="translate(50, 350)">
-    <!-- Rating Stars -->
-    <image class="img-rating" href="${imageBase64Rating}" height="40" width="200" />
-    <text class="rating-text" transform="translate(220, 30)">${rating} / 5</text>
-    <!-- Logo -->
-    <image class="img-logo" href="${imageBase64Logo}" height="40" width="120" transform="translate(300, 0)" />
+
+  <!-- Lignes de Titre -->
+  <g transform="translate(50, 100)">
+    <text class="title" x="0" y="0">
+      ${review.experience}
+    </text>
   </g>
 
-  <!-- Other elements -->
+  <!-- Nom du Critique -->
+  <g transform="translate(50, 200)">
+    <text class="rating-text">
+      ${text_2} ${review.username}
+    </text>
+  </g>
+
+  <!-- Étoiles de la Note -->
+  <g transform="translate(50, 250)">
+    <image
+      class="img-rating"
+      href="${imageBase64Rating}"
+      height="50"
+      width="250"
+    />
+    <text class="rating-text" transform="translate(270, 20)">
+      ${rating} / 5
+    </text>
+  </g>
+
+  <!-- Total des Critiques -->
+  <g transform="translate(50, 320)">
+    <text class="rating-text">
+      ${company.total_reviews} ${text_3}
+    </text>
+  </g>
+
+  <!-- Logo -->
+  <g transform="translate(850, 450)">
+    <image
+      class="img-logo"
+      href="${imageBase64Logo}"
+      height="50"
+      width="150"
+    />
+  </g>
 </svg>
 `;
 
-  try {
-    const imageBuffer = await sharp(Buffer.from(svgImage))
-      .resize(1200, 630)
-      .png({ quality: 100 })
-      .withMetadata({ density: 300 })
-      .toBuffer();
-
-    res.setHeader("Content-Type", "image/png");
-    res.setHeader(
-      "Cache-Control",
-      "public, immutable, no-transform, s-maxage=31536000, max-age=31536000"
-    );
-    res.send(imageBuffer);
-  } catch (err) {
-    console.error("Error processing SVG to PNG:", err);
-    res.status(500).json({ error: "Failed to generate image." });
-  }
+  const imageBuffer = await sharp(Buffer.from(svgImage))
+    .resize(1200, 630)
+    .png({ quality: 100 })
+    .withMetadata({ density: 300 })
+    .toBuffer();
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader(
+    "Cache-Control",
+    `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
+  );
+  res.send(imageBuffer);
 }
 module.exports = handler;
