@@ -176,12 +176,9 @@ async function handler(req, res) {
 
   const svgWidth = 1200;
   const svgHeight = 600;
-  const leftMargin = 100;
-  const rigthMargin = 100;
-  const topMargin = 60;
+  const topMargin = 50;
   const lineHeight = 40;
 
-  // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
   const truncatedText = truncateText(review.experience, 7, 60);
 
   const svgImage = `
@@ -226,11 +223,14 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(50, ${topMargin})">
-      <text class="review-text" y="0">
+      <text class="review-text" x2="${svgWidth - 50}">
         ${truncatedText
           .split("\n")
           .map(
-            (line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`
+            (line, index) =>
+              `<tspan x="0" dy="${lineHeight}" x2="${
+                svgWidth - 50
+              }">${line}</tspan>`
           )
           .join("")}
       </text>
