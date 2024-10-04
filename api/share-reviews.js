@@ -199,12 +199,9 @@ async function handler(req, res) {
           word-spacing: 5px;
         }
         .review-text {
-          font-size: 70px;
+          font-size: 50px;
           font-family: "Helvetica";
           text-anchor: start;
-          dominant-baseline: middle;
-          letter-spacing: 1px;
-          word-spacing: 5px;
           fill: #000;
         }
         .rating {
