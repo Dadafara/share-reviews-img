@@ -84,7 +84,6 @@ function getLanguageData(lang) {
   return languageRatings[lang];
 }
 
-// Fonction pour couper le texte avec une limite de lignes et points de suspension
 function truncateText(text, maxLines, maxLineLength) {
   const words = text.split(" ");
   let truncatedText = "";
@@ -101,13 +100,13 @@ function truncateText(text, maxLines, maxLineLength) {
     }
 
     if (lineCount >= maxLines) {
-      truncatedText += "..."; // Ajouter des points de suspension si le texte dépasse la limite
+      truncatedText += "...";
       return;
     }
   });
 
   if (lineCount < maxLines) {
-    truncatedText += line.trim(); // Ajouter le dernier mot si la limite n'est pas atteinte
+    truncatedText += line.trim();
   }
 
   return truncatedText;
@@ -158,14 +157,21 @@ async function handler(req, res) {
   const ratingText = ratings[ratingIndex];
   const rating = roundToHalf(review.note);
 
+  const imageURLLogo = `${CDN_BASE_URL}/star-evaluator-bleu.png`;
   const imageURLRating = `${CDN_BASE_URL}/ratings/${rating}.png`;
   let imageBase64Rating;
+  let imageBase64Logo;
 
   try {
-    imageBase64Rating = await fetchImageToBase64(imageURLRating);
+    [imageBase64Logo, imageBase64Rating] = await Promise.all([
+      fetchImageToBase64(imageURLLogo),
+      fetchImageToBase64(imageURLRating),
+    ]);
   } catch (error) {
-    console.error("Error converting image to Base64:", error);
-    return res.status(500).json({ error: "Error converting image to Base64." });
+    console.error("Error converting images to Base64:", error);
+    res.status(500).json({
+      error: "Error converting images to Base64.",
+    });
   }
 
   const svgWidth = 1200;
@@ -230,11 +236,14 @@ async function handler(req, res) {
   
     <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
-    <!-- Number of reviews -->
+        <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
         ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
       </text>
+      <g transform="translate(${svgWidth - 300}, 0)">
+        <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
+      </g>
     </g>
   </svg>
   `;
