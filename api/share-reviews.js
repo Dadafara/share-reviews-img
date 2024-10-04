@@ -227,10 +227,7 @@ async function handler(req, res) {
         ${truncatedText
           .split("\n")
           .map(
-            (line, index) =>
-              `<tspan x1="0" dy="${lineHeight}" x2="${
-                svgWidth - 50
-              }">${line}</tspan>`
+            (line, index) => `<tspan x1="0" dy="${lineHeight}">${line}</tspan>`
           )
           .join("")}
       </text>
