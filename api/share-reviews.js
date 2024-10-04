@@ -229,7 +229,7 @@ async function handler(req, res) {
     
     <!-- Review text -->
     <g transform="translate(${leftMargin}, 50)">
-      <text class="review-text" y="0">${truncatedText
+      <text class="review-text" y="0"  height="50" width="250">${truncatedText
         .split("\n")
         .map((line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`)
         .join("")}</text>
