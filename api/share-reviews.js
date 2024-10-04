@@ -176,7 +176,7 @@ async function handler(req, res) {
 
   const svgWidth = 1200;
   const svgHeight = 600;
-  const topMargin = 100;
+  const topMargin = 95;
   const lineHeight = 50;
 
   const truncatedText = truncateText(review.experience, 5, 60);
