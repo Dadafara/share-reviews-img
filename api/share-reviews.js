@@ -177,6 +177,7 @@ async function handler(req, res) {
   const svgWidth = 1200;
   const svgHeight = 600;
   const leftMargin = 100;
+  const rightMargin = 100;
   const topMargin = 50;
   const lineHeight = 40;
 
@@ -253,7 +254,7 @@ async function handler(req, res) {
     topMargin + 200
   })"> <!-- Ajustez ici pour le décalage -->
       <text class="rating">
-        ${text_1} ${rating} / 5 | ${company.reviews.length} ${text_3}
+        ${text_1} ${rating} / 5 | ${text_3}
       </text>
       <g transform="translate(${svgWidth - 300 - rightMargin}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
