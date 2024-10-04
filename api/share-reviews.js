@@ -177,6 +177,7 @@ async function handler(req, res) {
   const svgWidth = 1200;
   const svgHeight = 600;
   const leftMargin = 100;
+  const rightMargin = 100;
   const topMargin = 50;
   const lineHeight = 40;
 
@@ -225,7 +226,7 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(${leftMargin}, ${topMargin})">
-      <text class="review-text" y="0">
+      <text class="review-text" x1="${leftMargin}" x2="${rightMargin} y="0">
         ${truncatedText
           .split("\n")
           .map(
@@ -236,21 +237,23 @@ async function handler(req, res) {
     </g>
 
     <!-- Rating stars -->
-    <g transform="translate(50, 400)">
+    <g transform="translate(${leftMargin}, ${topMargin + 100})">
       <image href="${imageBase64Rating}" height="50" width="250" />
       <text class="rating" transform="translate(270, 35)">
         ${text_2} ${review.username}
       </text>
     </g>
   
-    <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
+    <line class="line" x1="${leftMargin}" y1="490" x2="${
+    svgWidth - rightMargin
+  }" y2="490"/>
   
         <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
         ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
       </text>
-      <g transform="translate(${svgWidth - 300}, 0)">
+      <g transform="translate(${svgWidth - 300 - rightMargin}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
       </g>
     </g>
