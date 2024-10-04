@@ -220,7 +220,9 @@ async function handler(req, res) {
           font-size: 50px;
           font-family: "Helvetica";
           text-anchor: start;
-          fill: #000;
+          dominant-baseline: middle;
+          letter-spacing: 1px;
+          word-spacing: 5px;
         }
         .review-text {
           font-size: 36px;
