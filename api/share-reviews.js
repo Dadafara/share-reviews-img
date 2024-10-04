@@ -225,9 +225,7 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(${leftMargin}, ${topMargin})">
-      <text class="review-text" x="${
-        (svgWidth - leftMargin - rightMargin) / 2
-      }" y="0">
+      <text class="review-text" x="${svgWidth - rightMargin}" y="0">
         ${truncatedText
           .split("\n")
           .map(
@@ -245,16 +243,14 @@ async function handler(req, res) {
       </text>
     </g>
   
-    <line class="line" x1="${leftMargin}" y1="530" x2="${
-    svgWidth - rightMargin
-  }" y2="530"/>
+    <line class="line" x1="${leftMargin}" y1="530" x2="${svgWidth}" y2="530"/>
   
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 540)">
       <text class="rating" transform="translate(0, 35)">
         ${text_1} ${rating} / 5 | ${text_3}
       </text>
-      <g transform="translate(${svgWidth - 300 - rightMargin}, 0)">
+      <g transform="translate(${svgWidth - 300}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
       </g>
     </g>
