@@ -228,7 +228,7 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
     
     <!-- Review text -->
-    <g transform="translate(${leftMargin}, 0)">
+    <g transform="translate(${leftMargin}, 50)">
       <text class="review-text" y="0">${truncatedText
         .split("\n")
         .map((line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`)
