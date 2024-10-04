@@ -223,11 +223,11 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(50, ${topMargin})">
-      <text class="review-text" x2="${svgWidth - 50}">
+      <text class="review-text" y="0">
         ${truncatedText
           .split("\n")
           .map(
-            (line, index) => `<tspan x1="0" dy="${lineHeight}">${line}</tspan>`
+            (line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`
           )
           .join("")}
       </text>
