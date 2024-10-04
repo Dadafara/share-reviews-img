@@ -5,6 +5,7 @@ const path = require("path");
 const pathToFonts = path.resolve(process.cwd(), "fonts");
 process.env.FONTCONFIG_PATH = pathToFonts;
 const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
+// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -73,7 +74,7 @@ function roundToHalf(x) {
   } else if (x > 4.7 && x <= 5) {
     return 5;
   } else {
-    return x;
+    return x; // handle cases where x > 5 or x < 0, if needed
   }
 }
 
@@ -168,7 +169,6 @@ async function handler(req, res) {
       error: "Error converting images to Base64.",
     });
   }
-
   const text =
     locale === "de" ? `${review.experience}` : ` ${review.experience}`;
 
@@ -188,6 +188,7 @@ async function handler(req, res) {
 
     words.forEach((word) => {
       if ((line + word).length < 40) {
+        // Ajustez 40 en fonction de la longueur souhaitée pour une ligne
         line += word + " ";
       } else {
         truncatedText += line.trim() + "\n";
@@ -195,7 +196,7 @@ async function handler(req, res) {
         lineCount++;
       }
       if (lineCount >= maxLines) {
-        truncatedText += "...";
+        truncatedText += "..."; // Ajouter des points de suspension si le texte dépasse la limite
         return;
       }
     });
@@ -204,42 +205,8 @@ async function handler(req, res) {
     return truncatedText;
   }
 
-  function justifyText(truncatedText, svgWidth) {
-    const lines = truncatedText.split("\n").map((line) => line.trim());
-    const maxLineLength = svgWidth - 20;
-
-    return lines
-      .map((line) => {
-        const words = line.split(" ");
-        const lineLength = words.reduce(
-          (acc, word) => acc + measureText(word),
-          0
-        );
-        const extraSpace = (maxLineLength - lineLength) / (words.length - 1);
-
-        let xPosition = 10;
-
-        const justifiedLine = words
-          .map((word, index) => {
-            const textElement = `<text class="title" x="${xPosition}" y="50">${word}</text>`;
-            xPosition += measureText(word) + extraSpace;
-            return textElement;
-          })
-          .join("");
-
-        return justifiedLine;
-      })
-      .join("");
-  }
-
-  function measureText(text) {
-    return text.length * 7;
-  }
-
-  const truncatedText = truncateText(review.experience, 6);
-  const justifiedSvgContent = justifyText(truncatedText, svgWidth);
-
   const wrappedText = wrapText(text, 80);
+  const truncatedText = truncateText(review.experience, 6);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -271,11 +238,47 @@ async function handler(req, res) {
         }
         .line {
           stroke: black;
-          stroke-width: 2;
+          stroke-width: 0.5;
+        }
+        .logo {
+          font-size: 30px;
         }
       </style>
     </defs>
-    ${justifiedSvgContent}
+    <rect width="100%" height="100%" fill="white"/>
+    
+    <!-- Review text -->
+<g transform="translate(50, 100)">
+  ${truncatedText
+    .split("\n")
+    .map(
+      (line, index) =>
+        `<text class="title" x="10" y="${
+          index * 36
+        }" text-anchor="start">${line}</text>`
+    )
+    .join("")}
+</g>
+  
+    <!-- Rating stars -->
+    <g transform="translate(50, 400)">
+      <image href="${imageBase64Rating}" height="50" width="250" />
+      <text class="rating" transform="translate(270, 35)">
+        ${text_2} ${review.username}
+      </text>
+    </g>
+  
+    <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
+  
+    <!-- Number of reviews and Company logo -->
+    <g transform="translate(50, 500)">
+        <text class="rating" transform="translate(0, 35)">
+            ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
+        </text>
+    <g transform="translate(${svgWidth - 300}, 0)">
+      <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
+    </g>
+  </g>
   </svg>
   `;
 
