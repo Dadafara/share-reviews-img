@@ -222,16 +222,17 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
   
     <!-- Review text -->
-    <g transform="translate(50, ${topMargin})">
-      <text class="review-text" y="0">
-        ${truncatedText
-          .split("\n")
-          .map(
-            (line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`
-          )
-          .join("")}
-      </text>
-    </g>
+<g transform="translate(50, ${topMargin})">
+  <text class="review-text" y="0">
+    ${truncatedText
+      .split("\n")
+      .map(
+        (line, index) =>
+          `<tspan x="0" dy="${lineHeight}" xml:space="preserve">${line}</tspan>`
+      )
+      .join("")}
+  </text>
+</g>
 
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
