@@ -176,8 +176,8 @@ async function handler(req, res) {
 
   const svgWidth = 1200;
   const svgHeight = 600;
-  const topMargin = 90;
-  const lineHeight = 70;
+  const topMargin = 100;
+  const lineHeight = 40;
 
   const truncatedText = truncateText(review.experience, 5, 60);
 
@@ -223,12 +223,12 @@ async function handler(req, res) {
   
     <!-- Review text -->
 <g transform="translate(50, ${topMargin})">
-  <text class="review-text" y="0">
+  <text>
     ${truncatedText
       .split("\n")
       .map(
         (line, index) =>
-          `<tspan x="0" dy="${lineHeight}" xml:space="preserve">${line}</tspan>`
+          `<tspan class="review-text" x="0" dy="${lineHeight}" xml:space="preserve">${line}</tspan>`
       )
       .join("")}
   </text>
