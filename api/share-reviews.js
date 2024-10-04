@@ -91,27 +91,22 @@ function truncateText(text, maxLines, maxLineLength) {
   let line = "";
 
   words.forEach((word) => {
-    // Check if adding the next word exceeds the max line length
     if ((line + word).length <= maxLineLength) {
       line += word + " ";
     } else {
-      // If line count exceeds max lines, stop processing
-      if (lineCount >= maxLines) {
-        return;
-      }
-      // Add the current line to the truncated text
       truncatedText += line.trim() + "\n";
       line = word + " ";
       lineCount++;
     }
+
+    if (lineCount >= maxLines) {
+      truncatedText += "..."; // Ajoute des points de suspension
+      return; // Sort de la fonction pour ne pas ajouter plus de lignes
+    }
   });
 
-  // If line count is less than maxLines, add the last line
   if (lineCount < maxLines) {
-    truncatedText += line.trim();
-  } else {
-    // If we reached maxLines, append ellipses
-    truncatedText += "...";
+    truncatedText += line.trim(); // Ajoute le dernier mot si la limite n'est pas atteinte
   }
 
   return truncatedText;
