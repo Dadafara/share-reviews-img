@@ -231,7 +231,8 @@ async function handler(req, res) {
     <g transform="translate(${leftMargin}, 50)">
       <text class="review-text" y="0"  height="50" width="250">${truncatedText
         .split("\n")
-        .map((line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`)
+        .map((line, index) => `<tspan x="0" dy="${lineHeight}">nous avons été démarchés en porte à porte par Ector Alarm alors que nous étions chez Verisure. Ca tombait à point nommé car nous voulions revoir notre contrat. Notre prestataire n'ayant pas répondu à nos demandes, sector alarm s'est positionné avec davantage de matériel de sécurité, un prix moins élevé et une meilleure assistance. Pour le moment nous sommes très satisfaits d'être chez eux. Petit bémol : le fait de ne pas pouvoir programmer de routine sur l'application pour l'activitation du mode partiel la nuit par exemple.
+Sinon l'application est top, le matériel discret et facile d'utilisation, l'équipe commerciale très sympathiques (meme si les techniques commerciales sont les memes partout dans ce genre de secteur d'activité...) mais nous ne regrettons pas notre choix</tspan>`)
         .join("")}</text>
     </g>
 
