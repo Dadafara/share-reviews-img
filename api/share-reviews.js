@@ -144,40 +144,28 @@ async function handler(req, res) {
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let company, review;
+  let review;
   try {
-    const [companyResponse, reviewResponse] = await Promise.all([
-      axios(`https://api-starevaluator.com/api/company/id/${data}`),
-      axios(`https://api-starevaluator.com/api/review/id/${data}`),
-    ]);
-    company = companyResponse.data;
+    const reviewResponse = await axios(
+      `https://api-starevaluator.com/api/review/id/${data}`
+    );
     review = reviewResponse.data;
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching company or review data." });
+    return res.status(500).json({ error: "Error fetching review data." });
   }
 
   const ratingIndex = Math.min(Math.floor(review.note), 4);
   const ratingText = ratings[ratingIndex];
   const rating = roundToHalf(review.note);
 
-  const imageURLLogo = `${CDN_BASE_URL}/star-evaluator-bleu.png`;
   const imageURLRating = `${CDN_BASE_URL}/ratings/${rating}.png`;
-
-  let imageBase64Logo;
   let imageBase64Rating;
 
   try {
-    [imageBase64Logo, imageBase64Rating] = await Promise.all([
-      fetchImageToBase64(imageURLLogo),
-      fetchImageToBase64(imageURLRating),
-    ]);
+    imageBase64Rating = await fetchImageToBase64(imageURLRating);
   } catch (error) {
-    console.error("Error converting images to Base64:", error);
-    res.status(500).json({
-      error: "Error converting images to Base64.",
-    });
+    console.error("Error converting image to Base64:", error);
+    return res.status(500).json({ error: "Error converting image to Base64." });
   }
 
   const svgWidth = 1200;
@@ -197,7 +185,7 @@ async function handler(req, res) {
           src: url("${helveticaBoldPath}");
         }
         .title {
-          font-size: 50px;
+          font-size: 70px;
           font-family: "Helvetica";
           text-anchor: start;
           dominant-baseline: middle;
@@ -220,16 +208,13 @@ async function handler(req, res) {
           stroke: black;
           stroke-width: 0.5;
         }
-        .logo {
-          font-size: 30px;
-        }
       </style>
     </defs>
     <rect width="100%" height="100%" fill="white"/>
     
     <!-- Review text -->
     <g transform="translate(${leftMargin}, 50)">
-      <text class="review-text" y="0" height="50" width="250">${truncatedText
+      <text class="review-text" y="0"  height="50" width="250">${truncatedText
         .split("\n")
         .map((line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`)
         .join("")}</text>
@@ -245,14 +230,11 @@ async function handler(req, res) {
   
     <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
-    <!-- Number of reviews and Company logo -->
+    <!-- Number of reviews -->
     <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
-        ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
+        ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
       </text>
-      <g transform="translate(${svgWidth - 300}, 0)">
-        <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
-      </g>
     </g>
   </svg>
   `;
@@ -265,7 +247,7 @@ async function handler(req, res) {
   res.setHeader("Content-Type", "image/png");
   res.setHeader(
     "Cache-Control",
-    `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`
+    "public, immutable, no-transform, s-maxage=31536000, max-age=31536000"
   );
   res.send(imageBuffer);
 }
