@@ -251,12 +251,7 @@ async function handler(req, res) {
 <g transform="translate(50, 100)">
   ${truncatedText
     .split("\n")
-    .map(
-      (line, index) =>
-        `<text class="title" x="10" y="${
-          index * 36
-        }" text-anchor="start">${line}</text>`
-    )
+    .map((line) => `<text class="title" text-anchor="start">${line}</text>`)
     .join("")}
 </g>
   
