@@ -201,7 +201,7 @@ async function handler(req, res) {
           word-spacing: 5px;
         }
         .review-text {
-          font-size: 50px;
+          font-size: 40px;
           font-family: "Helvetica";
           text-anchor: start;
           margin-right: 100px;
