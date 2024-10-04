@@ -252,7 +252,7 @@ async function handler(req, res) {
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 540)">
       <text class="rating" transform="translate(0, 35)">
-        ${text_1} ${rating} / 5 | ${company.reviews.length} ${text_3}
+        ${text_1} ${rating} / 5 | ${text_3}
       </text>
       <g transform="translate(${svgWidth - 300 - rightMargin}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
