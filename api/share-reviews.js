@@ -179,7 +179,7 @@ async function handler(req, res) {
   const topMargin = 100;
   const lineHeight = 40;
 
-  const truncatedText = truncateText(review.experience, 7, 60);
+  const truncatedText = truncateText(review.experience, 5, 60);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -253,7 +253,7 @@ async function handler(req, res) {
       </g>
     </g>
   </svg>
-  `;
+`;
 
   const imageBuffer = await sharp(Buffer.from(svgImage))
     .resize(1200, 630)
