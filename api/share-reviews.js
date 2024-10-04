@@ -177,7 +177,7 @@ async function handler(req, res) {
   const svgWidth = 1200;
   const svgHeight = 600;
   const topMargin = 100;
-  const lineHeight = 40;
+  const lineHeight = 45;
 
   const truncatedText = truncateText(review.experience, 5, 60);
 
@@ -198,7 +198,7 @@ async function handler(req, res) {
           word-spacing: 5px;
         }
         .review-text {
-          font-size: 35px;
+          font-size: 38px;
           font-family: "Helvetica";
           text-anchor: start;
           margin-right: 100px;
