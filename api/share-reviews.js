@@ -228,7 +228,7 @@ async function handler(req, res) {
           .split("\n")
           .map(
             (line, index) =>
-              `<tspan x1="50" dy="${lineHeight}" x2="${
+              `<tspan x1="0" dy="${lineHeight}" x2="${
                 svgWidth - 50
               }">${line}</tspan>`
           )
