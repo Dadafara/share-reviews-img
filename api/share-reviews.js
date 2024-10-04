@@ -239,7 +239,7 @@ async function handler(req, res) {
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
-      <text class="rating" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"">
+      <text class="rating" x1="50" y1="490" x2="${svgWidth - 50}" y2="490">
         ${text_2} ${review.username}
       </text>
     </g>
