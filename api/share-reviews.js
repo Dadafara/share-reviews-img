@@ -222,7 +222,7 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
   
     <!-- Review text -->
-    <g transform="translate(50, ${svgWidth - 300})">
+    <g transform="translate(50, ${topMargin})">
       <text class="review-text" x2="${svgWidth - 50}">
         ${truncatedText
           .split("\n")
