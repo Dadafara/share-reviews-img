@@ -174,13 +174,14 @@ async function handler(req, res) {
     });
   }
 
-  const svgWidth = 1200;
-  const svgHeight = 630;
-  const leftMargin = 100;
+  const svgWidth = 1200; // Largeur de l'image SVG
+  const svgHeight = 600; // Hauteur de l'image SVG
+  const leftMargin = 100; // Marge gauche pour le texte
+  const topMargin = 50; // Marge supérieure pour le texte
   const lineHeight = 40; // Hauteur de ligne pour espacement
 
   // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
-  const truncatedText = truncateText(review.experience, 5, 60);
+  const truncatedText = truncateText(review.experience, 5, 60); // Votre fonction de troncation
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -191,7 +192,7 @@ async function handler(req, res) {
           src: url("${helveticaBoldPath}");
         }
         .title {
-          font-size: 70px;
+          font-size: 80px;
           font-family: "Helvetica";
           text-anchor: start;
           dominant-baseline: middle;
@@ -199,13 +200,13 @@ async function handler(req, res) {
           word-spacing: 5px;
         }
         .review-text {
-          font-size: 50px;
+          font-size: 40px;
           font-family: "Helvetica";
           text-anchor: start;
           fill: #000;
         }
         .rating {
-          font-size: 30px;
+          font-size: 34px;
           font-family: "Helvetica";
           text-anchor: start;
           fill: #000;
@@ -214,16 +215,23 @@ async function handler(req, res) {
           stroke: black;
           stroke-width: 0.5;
         }
+        .logo {
+          font-size: 30px;
+        }
       </style>
     </defs>
     <rect width="100%" height="100%" fill="white"/>
-    
+  
     <!-- Review text -->
-    <g transform="translate(${leftMargin}, 50)">
-      <text class="review-text" y="0"  height="50" width="250">${truncatedText
-        .split("\n")
-        .map((line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`)
-        .join("")}</text>
+    <g transform="translate(${leftMargin}, ${topMargin})">
+      <text class="review-text" y="0">
+        ${truncatedText
+          .split("\n")
+          .map(
+            (line, index) => `<tspan x="0" dy="${lineHeight}">${line}</tspan>`
+          )
+          .join("")}
+      </text>
     </g>
 
     <!-- Rating stars -->
