@@ -182,7 +182,7 @@ async function handler(req, res) {
   const lineHeight = 40;
 
   // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
-  const truncatedText = truncateText(review.experience, 7, 50);
+  const truncatedText = truncateText(review.experience, 7, 60);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
