@@ -177,6 +177,7 @@ async function handler(req, res) {
   const svgWidth = 1200; // Largeur de l'image SVG
   const svgHeight = 600; // Hauteur de l'image SVG
   const leftMargin = 100; // Marge gauche pour le texte
+  const rightMargin = 100; // Marge droite pour le texte
   const topMargin = 50; // Marge supérieure pour le texte
   const lineHeight = 40; // Hauteur de ligne pour espacement
 
@@ -202,7 +203,7 @@ async function handler(req, res) {
         .review-text {
           font-size: 40px;
           font-family: "Helvetica";
-          text-anchor: start;
+          text-anchor: middle; /* Centrer le texte */
           fill: #000;
         }
         .rating {
@@ -224,7 +225,9 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(${leftMargin}, ${topMargin})">
-      <text class="review-text" y="0">
+      <text class="review-text" x="${
+        (svgWidth - leftMargin - rightMargin) / 2
+      }" y="0">
         ${truncatedText
           .split("\n")
           .map(
@@ -233,23 +236,25 @@ async function handler(req, res) {
           .join("")}
       </text>
     </g>
-
+  
     <!-- Rating stars -->
-    <g transform="translate(50, 400)">
+    <g transform="translate(50, 450)">
       <image href="${imageBase64Rating}" height="50" width="250" />
       <text class="rating" transform="translate(270, 35)">
         ${text_2} ${review.username}
       </text>
     </g>
   
-    <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
+    <line class="line" x1="${leftMargin}" y1="530" x2="${
+    svgWidth - rightMargin
+  }" y2="530"/>
   
-        <!-- Number of reviews and Company logo -->
-    <g transform="translate(50, 500)">
+    <!-- Number of reviews and Company logo -->
+    <g transform="translate(50, 540)">
       <text class="rating" transform="translate(0, 35)">
-        ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
+        ${text_1} ${rating} / 5 | ${company.reviews.length} ${text_3}
       </text>
-      <g transform="translate(${svgWidth - 300}, 0)">
+      <g transform="translate(${svgWidth - 300 - rightMargin}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
       </g>
     </g>
