@@ -5,7 +5,6 @@ const path = require("path");
 const pathToFonts = path.resolve(process.cwd(), "fonts");
 process.env.FONTCONFIG_PATH = pathToFonts;
 const helveticaBoldPath = path.resolve(pathToFonts, "Helvetica Bold.ttf");
-// path.resolve(process.cwd(), "fonts", "Helvetica.ttf");
 
 const languageRatings = {
   en: {
@@ -52,6 +51,7 @@ const languageRatings = {
   },
 };
 
+// Fonction pour arrondir
 function roundToHalf(x) {
   if (x === 0) {
     return 0;
@@ -74,7 +74,7 @@ function roundToHalf(x) {
   } else if (x > 4.7 && x <= 5) {
     return 5;
   } else {
-    return x; // handle cases where x > 5 or x < 0, if needed
+    return x;
   }
 }
 
@@ -84,24 +84,33 @@ function getLanguageData(lang) {
   return languageRatings[lang];
 }
 
-function wrapText(text, maxLength) {
+// Fonction pour couper le texte avec une limite de lignes et points de suspension
+function truncateText(text, maxLines, maxLineLength) {
   const words = text.split(" ");
-  const lines = [];
-  let currentLine = words.shift() || "";
+  let truncatedText = "";
+  let lineCount = 0;
+  let line = "";
 
-  for (const word of words) {
-    const testLine = currentLine ? currentLine + " " + word : word;
-
-    if (testLine.length <= maxLength) {
-      currentLine = testLine;
+  words.forEach((word) => {
+    if ((line + word).length <= maxLineLength) {
+      line += word + " ";
     } else {
-      lines.push(currentLine);
-      currentLine = word;
+      truncatedText += line.trim() + "\n";
+      line = word + " ";
+      lineCount++;
     }
+
+    if (lineCount >= maxLines) {
+      truncatedText += "..."; // Ajouter des points de suspension si le texte dépasse la limite
+      return;
+    }
+  });
+
+  if (lineCount < maxLines) {
+    truncatedText += line.trim(); // Ajouter le dernier mot si la limite n'est pas atteinte
   }
 
-  lines.push(currentLine);
-  return lines;
+  return truncatedText;
 }
 
 async function fetchImageToBase64(url) {
@@ -121,6 +130,7 @@ async function handler(req, res) {
       .json({ error: "Missing required query parameters 'data' or 'locale'." });
   }
 
+  // Validation de locale
   function isValidLocale(locale) {
     const supportedLocales = ["fr", "de", "pt", "nl", "it", "es", "en"];
     return locale ? supportedLocales.includes(locale) : false;
@@ -169,44 +179,13 @@ async function handler(req, res) {
       error: "Error converting images to Base64.",
     });
   }
-  const text =
-    locale === "de" ? `${review.experience}` : ` ${review.experience}`;
 
   const svgWidth = 1200;
   const svgHeight = 630;
   const leftMargin = 150;
-  const leftMarginText = 150;
-  const leftMarginRatting = 150;
-  const leftMarginLogo = 135;
-  const titleY = 150;
 
-  function truncateText(text, maxLines) {
-    const words = text.split(" ");
-    let truncatedText = "";
-    let lineCount = 0;
-    let line = "";
-
-    words.forEach((word) => {
-      if ((line + word).length < 40) {
-        // Ajustez 40 en fonction de la longueur souhaitée pour une ligne
-        line += word + " ";
-      } else {
-        truncatedText += line.trim() + "\n";
-        line = word + " ";
-        lineCount++;
-      }
-      if (lineCount >= maxLines) {
-        truncatedText += "..."; // Ajouter des points de suspension si le texte dépasse la limite
-        return;
-      }
-    });
-
-    truncatedText += line.trim();
-    return truncatedText;
-  }
-
-  const wrappedText = wrapText(text, 80);
-  const truncatedText = truncateText(review.experience, 6);
+  // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
+  const truncatedText = truncateText(review.experience, 5, 60);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -248,19 +227,13 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
     
     <!-- Review text -->
-<g transform="translate(50, 50)">
-  ${truncatedText
-    .split("\n")
-    .map(
-      (index) =>
-        `<text class="title" x="10" y="${
-          index * 36
-        }" text-anchor="start">nous avons été démarchés en porte à porte par Ector Alarm alors que nous étions chez Verisure. Ca tombait à point nommé car nous voulions revoir notre contrat. Notre prestataire n'ayant pas répondu à nos demandes, sector alarm s'est positionné avec davantage de matériel de sécurité, un prix moins élevé et une meilleure assistance. Pour le moment nous sommes très satisfaits d'être chez eux. Petit bémol : le fait de ne pas pouvoir programmer de routine sur l'application pour l'activitation du mode partiel la nuit par exemple.
-Sinon l'application est top, le matériel discret et facile d'utilisation, l'équipe commerciale très sympathiques (meme si les techniques commerciales sont les memes partout dans ce genre de secteur d'activité...) mais nous ne regrettons pas notre choix</text>`
-    )
-    .join("")}
-</g>
-  
+    <g transform="translate(${leftMargin}, 150)">
+      <text class="review-text" y="0">${truncatedText.replace(
+        /\n/g,
+        '</text><text class="review-text" y="40">'
+      )}</text>
+    </g>
+
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
@@ -273,13 +246,13 @@ Sinon l'application est top, le matériel discret et facile d'utilisation, l'éq
   
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
-        <text class="rating" transform="translate(0, 35)">
-            ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
-        </text>
-    <g transform="translate(${svgWidth - 300}, 0)">
-      <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
+      <text class="rating" transform="translate(0, 35)">
+        ${text_3} ${rating} / 5 | ${company.total_reviews} ${text_3}
+      </text>
+      <g transform="translate(${svgWidth - 300}, 0)">
+        <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
+      </g>
     </g>
-  </g>
   </svg>
   `;
 
@@ -295,4 +268,5 @@ Sinon l'application est top, le matériel discret et facile d'utilisation, l'éq
   );
   res.send(imageBuffer);
 }
+
 module.exports = handler;
