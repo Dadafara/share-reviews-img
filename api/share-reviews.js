@@ -182,7 +182,7 @@ async function handler(req, res) {
 
   const svgWidth = 1200;
   const svgHeight = 630;
-  const leftMargin = 150;
+  const leftMargin = 1200;
   const lineHeight = 40; // Hauteur de ligne pour espacement
 
   // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
