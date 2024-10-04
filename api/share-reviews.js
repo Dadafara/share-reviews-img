@@ -205,6 +205,42 @@ async function handler(req, res) {
     return truncatedText;
   }
 
+  function justifyText(truncatedText, svgWidth) {
+    const lines = truncatedText.split("\n").map((line) => line.trim());
+    const maxLineLength = svgWidth - 20; // Marges gauche et droite ajustées
+
+    return lines
+      .map((line) => {
+        const words = line.split(" ");
+        const lineLength = words.reduce(
+          (acc, word) => acc + measureText(word),
+          0
+        );
+        const extraSpace = (maxLineLength - lineLength) / (words.length - 1);
+
+        let xPosition = 10; // Point de départ pour la marge gauche
+
+        // Génère la ligne avec des espaces supplémentaires
+        const justifiedLine = words
+          .map((word, index) => {
+            const textElement = `<text class="title" x="${xPosition}" y="50">${word}</text>`;
+            xPosition += measureText(word) + extraSpace;
+            return textElement;
+          })
+          .join("");
+
+        return justifiedLine;
+      })
+      .join("");
+  }
+
+  function measureText(text) {
+    // Simuler la mesure du texte en pixels (peut être ajusté)
+    return text.length * 7; // Approximativement 7px par lettre
+  }
+
+  const justifiedSvgContent = justifyText(truncatedText, svgWidth);
+
   const wrappedText = wrapText(text, 80);
   const truncatedText = truncateText(review.experience, 6);
 
@@ -248,12 +284,9 @@ async function handler(req, res) {
     <rect width="100%" height="100%" fill="white"/>
     
     <!-- Review text -->
-<g transform="translate(50, 100)">
-  ${truncatedText
-    .split("\n")
-    .map((line) => `<text class="title" text-anchor="start">${line}</text>`)
-    .join("")}
-</g>
+<g transform="translate(0, 100)">
+    ${justifiedSvgContent}
+  </g>
   
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
