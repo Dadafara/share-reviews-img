@@ -205,6 +205,7 @@ async function handler(req, res) {
           text-anchor: start;
           margin-right: 100px;
           fill: #000;
+          text-align: justify;
         }
         .rating {
           font-size: 34px;
@@ -219,12 +220,21 @@ async function handler(req, res) {
         .logo {
           font-size: 30px;
         }
+        .blue-frame {
+          stroke: blue;
+          stroke-width: 5;
+          fill: none;
+        }
       </style>
     </defs>
-    <rect width="100%" height="100%" fill="white"/>
-  
+    
+    <!-- Blue border frame -->
+    <rect class="blue-frame" x="20" y="20" width="${svgWidth - 40}" height="${
+    svgHeight - 150
+  }" />
+    
     <!-- Review text -->
-    <g transform="translate(${leftMargin}, ${topMargin})">
+    <g transform="translate(${leftMargin}, ${topMargin + 20})">
       <text class="review-text" y="0">
         ${truncatedText
           .split("\n")
@@ -234,7 +244,7 @@ async function handler(req, res) {
           .join("")}
       </text>
     </g>
-
+  
     <!-- Rating stars -->
     <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
@@ -242,10 +252,10 @@ async function handler(req, res) {
         ${text_2} ${review.username}
       </text>
     </g>
-  
+    
     <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
-        <!-- Number of reviews and Company logo -->
+    <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
         ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
