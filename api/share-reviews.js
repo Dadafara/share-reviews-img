@@ -91,23 +91,20 @@ function truncateText(text, maxLines, maxLineLength) {
   let line = "";
 
   for (const word of words) {
-    // Vérifiez si l'ajout du mot dépasse la longueur maximale de la ligne
     if ((line + word).length > maxLineLength) {
-      truncatedText += line.trim() + "\n"; // Ajoutez la ligne actuelle au texte tronqué
-      line = word + " "; // Commencez une nouvelle ligne avec le mot actuel
-      lineCount++; // Incrémentez le compteur de lignes
+      truncatedText += line.trim() + "\n";
+      line = word + " ";
+      lineCount++;
     } else {
-      line += word + " "; // Ajoutez le mot à la ligne actuelle
+      line += word + " ";
     }
 
-    // Si le nombre maximum de lignes est atteint, arrêtez le processus
     if (lineCount >= maxLines) {
-      truncatedText += "..."; // Ajoutez des points de suspension
-      return truncatedText; // Retournez immédiatement
+      truncatedText += "...";
+      return truncatedText;
     }
   }
 
-  // Ajoutez la dernière ligne si elle existe et si la limite n'est pas atteinte
   if (lineCount < maxLines) {
     truncatedText += line.trim();
   }
@@ -202,9 +199,12 @@ async function handler(req, res) {
           word-spacing: 5px;
         }
         .review-text {
-          font-size: 36px;
+          font-size: 70px;
           font-family: "Helvetica";
           text-anchor: start;
+          dominant-baseline: middle;
+          letter-spacing: 1px;
+          word-spacing: 5px;
           fill: #000;
         }
         .rating {
