@@ -174,15 +174,14 @@ async function handler(req, res) {
     });
   }
 
-  const svgWidth = 1200; // Largeur de l'image SVG
-  const svgHeight = 600; // Hauteur de l'image SVG
-  const leftMargin = 100; // Marge gauche pour le texte
-  const rightMargin = 100; // Marge droite pour le texte
-  const topMargin = 50; // Marge supérieure pour le texte
-  const lineHeight = 40; // Hauteur de ligne pour espacement
+  const svgWidth = 1200;
+  const svgHeight = 600;
+  const leftMargin = 100;
+  const topMargin = 50;
+  const lineHeight = 40;
 
   // Limiter le texte à 5 lignes, chaque ligne avec une longueur maximale (exemple : 60 caractères)
-  const truncatedText = truncateText(review.experience, 5, 60); // Votre fonction de troncation
+  const truncatedText = truncateText(review.experience, 5, 60);
 
   const svgImage = `
   <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg">
@@ -203,7 +202,8 @@ async function handler(req, res) {
         .review-text {
           font-size: 40px;
           font-family: "Helvetica";
-          text-anchor: middle; /* Centrer le texte */
+          text-anchor: start;
+          margin-right: 100px;
           fill: #000;
         }
         .rating {
@@ -225,7 +225,7 @@ async function handler(req, res) {
   
     <!-- Review text -->
     <g transform="translate(${leftMargin}, ${topMargin})">
-      <text class="review-text" x="${svgWidth - rightMargin}" y="0">
+      <text class="review-text" y="0">
         ${truncatedText
           .split("\n")
           .map(
@@ -234,21 +234,21 @@ async function handler(req, res) {
           .join("")}
       </text>
     </g>
-  
+
     <!-- Rating stars -->
-    <g transform="translate(50, 450)">
+    <g transform="translate(50, 400)">
       <image href="${imageBase64Rating}" height="50" width="250" />
       <text class="rating" transform="translate(270, 35)">
         ${text_2} ${review.username}
       </text>
     </g>
   
-    <line class="line" x1="${leftMargin}" y1="530" x2="${svgWidth}" y2="530"/>
+    <line class="line" x1="50" y1="490" x2="${svgWidth - 50}" y2="490"/>
   
-    <!-- Number of reviews and Company logo -->
-    <g transform="translate(50, 540)">
+        <!-- Number of reviews and Company logo -->
+    <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
-        ${text_1} ${rating} / 5 | ${text_3}
+        ${text_1} ${rating} / 5 | ${review.total_reviews} ${text_3}
       </text>
       <g transform="translate(${svgWidth - 300}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
