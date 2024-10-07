@@ -143,25 +143,18 @@ async function handler(req, res) {
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let company;
+  let company, review;
   try {
-    const companyResponse = await axios(
-      `https://api-starevaluator.com/api/company/id/${data}`
-    );
+    const [companyResponse, reviewResponse] = await Promise.all([
+      axios(`https://api-starevaluator.com/api/company/id/${data}`),
+      axios(`https://api-starevaluator.com/api/review/id/${data}`),
+    ]);
     company = companyResponse.data;
-    console.log("company");
-  } catch (error) {
-    return res.status(500).json({ error: "Error fetching company data." });
-  }
-
-  let review;
-  try {
-    const reviewResponse = await axios(
-      `https://api-starevaluator.com/api/review/id/${data}`
-    );
     review = reviewResponse.data;
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching review data." });
+    return res
+      .status(500)
+      .json({ error: "Error fetching company or review data." });
   }
 
   const ratingIndex = Math.min(Math.floor(review.note), 4);
