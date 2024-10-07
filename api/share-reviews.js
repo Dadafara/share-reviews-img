@@ -149,8 +149,9 @@ async function handler(req, res) {
       `https://api-starevaluator.com/api/company/id/${data}`
     );
     company = companyResponse.data;
+    console.log("company");
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching review data." });
+    return res.status(500).json({ error: "Error fetching company data." });
   }
 
   let review;
