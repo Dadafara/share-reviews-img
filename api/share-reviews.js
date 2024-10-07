@@ -145,7 +145,7 @@ async function handler(req, res) {
 
   let company;
   try {
-    const companyResponse = await axios.get(
+    const companyResponse = await axios(
       `https://api-starevaluator.com/api/company/id/${data}`
     );
     company = companyResponse.data;
@@ -185,6 +185,11 @@ async function handler(req, res) {
       error: "Error converting images to Base64.",
     });
   }
+
+  const text =
+    locale === "de"
+      ? `${text_1} ${company.company_name}: ${ratingText}`
+      : ` ${company.company_name} ${text_1} ${ratingText}`;
 
   const svgWidth = 1200;
   const svgHeight = 600;
