@@ -145,14 +145,23 @@ async function handler(req, res) {
 
   let company;
   try {
-    const companyResponse = await axios(
+    const companyResponse = await axios.get(
       `https://api-starevaluator.com/api/company/id/${data}`
     );
     company = companyResponse.data;
-    if (!company) throw new Error("Company data is empty.");
+
+    if (!company || Object.keys(company).length === 0) {
+      throw new Error("Empty response for company data.");
+    }
   } catch (error) {
-    console.error("Error fetching company data:", error.message);
-    return res.status(500).json({ error: "Error fetching company data." });
+    console.error(
+      "Error fetching company data:",
+      error.response ? error.response.data : error.message
+    );
+    return res.status(500).json({
+      error: "Error fetching company data.",
+      details: error.message,
+    });
   }
 
   let review;
