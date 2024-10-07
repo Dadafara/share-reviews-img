@@ -143,7 +143,6 @@ async function handler(req, res) {
 
   const { ratings, text_1, text_2, text_3 } = getLanguageData(locale);
 
-  let company;
   try {
     const companyResponse = await axios.get(
       `https://api-starevaluator.com/api/company/id/${data}`
@@ -152,6 +151,11 @@ async function handler(req, res) {
 
     if (!company || Object.keys(company).length === 0) {
       throw new Error("Empty response for company data.");
+    }
+
+    // Validation pour s'assurer que total_reviews est présent
+    if (!company.hasOwnProperty("total_reviews")) {
+      throw new Error("Company 'total_reviews' not found.");
     }
   } catch (error) {
     console.error(
@@ -273,7 +277,7 @@ async function handler(req, res) {
     <!-- Number of reviews and Company logo -->
     <g transform="translate(50, 500)">
       <text class="rating" transform="translate(0, 35)">
-        ${text_1} ${rating} / 5 | ${company.reviews.length} ${text_3}
+        ${text_1} ${rating} / 5 | ${company.total_reviews} ${text_3}
       </text>
       <g transform="translate(${svgWidth - 300}, 0)">
         <image class="logo" href="${imageBase64Logo}" height="50" width="200" />
