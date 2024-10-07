@@ -259,7 +259,7 @@ async function handler(req, res) {
   const imageBuffer = await sharp(Buffer.from(svgImage))
     .resize(1200, 630)
     .png({ quality: 100 })
-    .withMetadata({ density: 300 })
+    .withMetadata({ density: 72 })
     .toBuffer();
   res.setHeader("Content-Type", "image/png");
   res.setHeader(
